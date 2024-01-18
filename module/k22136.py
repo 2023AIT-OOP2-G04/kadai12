@@ -2,28 +2,31 @@ import cv2
 import numpy as np
 import os
 from postProcessing import PostProcessing
-from PIL import Image, ImageEnhance
 
-def adjust_saturation_and_brightness(image_path, saturation_factor, brightness_factor, output_path):
-    # 画像を開く
-    img = Image.open(image_path)
+# 学籍番号のクラスを作成してこんな感じで継承する
+class k22136(PostProcessing):
+    # これは必須
+    def __init__(self):
+        super().__init__()
+        pass
 
-    # 彩度を変更
-    enhancer = ImageEnhance.Color(img)
-    img = enhancer.enhance(saturation_factor)
+    def adjust_saturation_and_brightness(self, input_path, output_path, saturation_factor, brightness_factor):
+        # 画像を開く
+        original_image = cv2.imread(input_path)
 
-    # 明度を変更
-    enhancer = ImageEnhance.Brightness(img)
-    img = enhancer.enhance(brightness_factor)
+        # 彩度と明度を変更
+        hsv_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2HSV)
+        hsv_image[:, :, 1] = np.clip(hsv_image[:, :, 1] * saturation_factor, 0, 255)
+        hsv_image[:, :, 2] = np.clip(hsv_image[:, :, 2] * brightness_factor, 0, 255)
 
-    # 画像を保存
-    img.save(output_path)
+        # 色空間を戻す
+        adjusted_image = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+        
+        # 画像を保存
+        self.save_img(hsv_image)
 
-    save_img
-
-
-# 処理したい画像をedit.pngとして保存し,望む場合はsavedに名前を入力して保存する
-    def save_img(src_img):
+    # 処理したい画像をedit.pngとして保存し,望む場合はsavedに名前を入力して保存する
+    def save_img(self,src_img):
         cv2.imwrite("img/edit/edit.png", src_img)
         print("保存したい場合は1を入力してください")
         flag = int(input())
@@ -33,6 +36,9 @@ def adjust_saturation_and_brightness(image_path, saturation_factor, brightness_f
             cv2.imwrite("img/saved/" + name + ".png", src_img)
 
 if __name__ == "__main__":
+
+    pp = k22136()
+
     # ユーザーからの入力を受け取る  
     image_path = "img/edit/iro_input.jpg"
     output_path = "img/edit/iro_input.jpg"
@@ -40,5 +46,5 @@ if __name__ == "__main__":
     brightness_factor = float(input("明度の変更倍率を入力してください (1.0 が変更なし): "))
 
     # 関数を呼び出して画像の彩度と明度を変更
-    adjust_saturation_and_brightness(image_path, saturation_factor, brightness_factor, output_path)
+    pp.adjust_saturation_and_brightness(image_path, output_path, saturation_factor, brightness_factor)
 
