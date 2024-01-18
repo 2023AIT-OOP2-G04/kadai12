@@ -1,4 +1,15 @@
+import cv2
+import numpy as np
+import os
+from postProcessing import PostProcessing
 from PIL import Image
+
+# 学籍番号のクラスを作成してこんな感じで継承する
+class k22136(PostProcessing):
+    # これは必須
+    def __init__(self):
+        super().__init__()
+        pass
 
 def resize_image(input_path, output_path, target_aspect_ratio):
     # 画像を開く
@@ -22,6 +33,18 @@ def resize_image(input_path, output_path, target_aspect_ratio):
     # リサイズされた画像を保存
     resized_image.save(output_path)
 
+    save_img
+
+# 処理したい画像をedit.pngとして保存し,望む場合はsavedに名前を入力して保存する
+    def save_img(src_img):
+        cv2.imwrite("img/edit/edit.png", src_img)
+        print("保存したい場合は1を入力してください")
+        flag = int(input())
+        if flag == 1:
+            print("保存するファイル名を入力してください")
+            name = input()
+            cv2.imwrite("img/saved/" + name + ".png", src_img)
+    
 
 # debug用
 if __name__ == "__main__":
