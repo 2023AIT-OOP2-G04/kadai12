@@ -1,6 +1,7 @@
 import sys
 from PySide6.QtWidgets import *
 from PySide6 import QtGui,QtCore
+import os
 
 # 画像を表示するウィンドウのクラス
 class ImageWindow(QLabel):
@@ -15,7 +16,8 @@ class ImageWindow(QLabel):
             self.imagePath=filename
         self.Image=QtGui.QImage(self.imagePath)
         # 写真のサイズが800*600になるように元のアスペクト比を保ったままリサイズ
-        self.Image=self.Image.scaled(800,600,QtCore.Qt.KeepAspectRatio)
+        self.Image=self.Image.scaled(800,600,QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+        self.setPixmap(QtGui.QPixmap.fromImage(self.Image))
 
 
 class DebugWindow(QWidget):
@@ -23,8 +25,10 @@ class DebugWindow(QWidget):
         super(DebugWindow, self).__init__(parent)
         self.setWindowTitle("デバッグ用ウィンドウ")
         self.resize(800, 600)
-        filename="./img/edit/20240111_141517.jpg"
-        self.imageWindow=ImageWindow(filename=filename,parent=self)
+        folderPath="./img/edit/"
+        filename=[fileName for fileName in os.listdir(folderPath) if fileName!=".gitignore"][0]
+        filePath=folderPath+filename
+        self.imageWindow=ImageWindow(filename=filePath,parent=self)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
