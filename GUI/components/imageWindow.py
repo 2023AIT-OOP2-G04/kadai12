@@ -26,7 +26,8 @@ class DebugWindow(QWidget):
         self.setWindowTitle("デバッグ用ウィンドウ")
         self.resize(800, 600)
         folderPath="./img/edit/"
-        filename=[fileName for fileName in os.listdir(folderPath) if fileName!=".gitignore"][0]
+        filename=[fileName for fileName in os.listdir(folderPath) if fileName!=".gitignore" and fileName!=".DS_Store" ][0]
+        print(filename)
         filePath=folderPath+filename
         self.imageWindow=ImageWindow(filename=filePath,parent=self)
 
