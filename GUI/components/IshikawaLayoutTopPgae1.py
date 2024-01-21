@@ -4,7 +4,7 @@ from PySide6 import QtGui,QtCore
 from PySide6.QtGui import QImage,QPixmap
 import os
 
-class MainWidget(QWidget):
+class TopPage(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('トップページ') # ウィンドウのタイトル
@@ -62,6 +62,6 @@ class MainWidget(QWidget):
 
 app = QApplication(sys.argv)
 app.setStyleSheet('QLabel{border: 1px solid black;}')
-main_widget = MainWidget()
+main_widget = TopPage()
 main_widget.show()
 app.exec()
