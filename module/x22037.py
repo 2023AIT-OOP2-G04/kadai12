@@ -5,8 +5,6 @@ import os
 import random
 from postProcessing import PostProcessing
 
-FILE_NAME = "img/edit/edit.png"
-
 
 class x22037(PostProcessing):
     # これは必須
@@ -21,9 +19,8 @@ class x22037(PostProcessing):
         flag = int(input())
         if flag == 1:
             for fileName in os.listdir(self.editFolderPath):
-                if fileName == ".gitingore":
+                if fileName == ".gitignore":
                     continue
-                filePath = self.editFolderPath + fileName
                 self.exportImage(fileName)
             print("保存しました")
 
