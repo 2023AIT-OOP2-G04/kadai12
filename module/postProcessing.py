@@ -3,8 +3,8 @@ import numpy as np
 import os
 from abc import ABCMeta, abstractmethod
 
-class PostProcessing(metaclass=ABCMeta):
 
+class PostProcessing(metaclass=ABCMeta):
     def __init__(self):
         self.editFolderPath = "./img/edit/"
         self.outputFolderPath = "./img/saved/"
@@ -18,10 +18,8 @@ class PostProcessing(metaclass=ABCMeta):
             filePath = self.editFolderPath + fileName
             img = cv2.imread(filePath)
         return img
-    
-    # editフォルダ内の画像をsavedフォルダへ保存する関数、継承すれば使えるようになります
-    def exportImage(self,fileName: str) -> None:
-        img=self.getEditImage()
-        cv2.imwrite(self.outputFolderPath + fileName,img)
 
-    
+    # editフォルダ内の画像をsavedフォルダへ保存する関数、継承すれば使えるようになります
+    def exportImage(self, fileName: str) -> None:
+        img = self.getEditImage()
+        cv2.imwrite(self.outputFolderPath + fileName, img)
