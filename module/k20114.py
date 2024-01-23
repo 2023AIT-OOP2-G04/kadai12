@@ -4,66 +4,57 @@ from postProcessing import PostProcessing
 
 class ImageProcessor(PostProcessing):
 
-    def __init__(self, input_dir, output_dir, crop_size=None):
+    def __init__(self, input_dir):
         super().__init__()
-        self.input_dir = input_dir #入力ディレクトリのパス
-        self.output_dir = output_dir #出力ディレクトリのパス
-        self.crop_size = crop_size #画像のトリミングサイズ
+        self.input_dir = input_dir
 
-    def process_images(self):
-        os.makedirs(self.output_dir, exist_ok=True) # 出力ディレクトリを作成（存在しない場合）
+    def process_images(self, vertical_crop_size=None, horizontal_crop_size=None):
+         # 指定されたフォルダ内のファイルを取得
+        files = os.listdir(self.input_dir)
 
-
-        files = os.listdir(self.input_dir) # 入力ディレクトリ内のファイル一覧を取得する
-
-
+         # フォルダ内の各画像ファイルに対して処理を行う
         for file_name in files:
+            # 画像ファイルであるかを確認
             if file_name.endswith(('.jpg', '.jpeg', '.png')):
+                # 画像ファイルのパスを構築
                 input_path = os.path.join(self.input_dir, file_name)
-                output_path = os.path.join(self.output_dir, file_name)
 
-                img = cv2.imread(input_path)  # 画像を読み込み
+                # 画像の読み込み
+                img = cv2.imread(input_path)
+                height, width, _ = img.shape
 
-                height, width, _ = img.shape # 画像の高さ、幅、チャンネル数を取得
-
-
-                if self.crop_size:
-                     # トリミングサイズが指定されている場合
-                    top = max(0, (height - self.crop_size) // 2)
-                    bottom = min(height, top + self.crop_size)
-                    left = max(0, (width - self.crop_size) // 2)
-                    right = min(width, left + self.crop_size)
+                # トリミングサイズが指定されていればトリミングを行う
+                if vertical_crop_size is not None and horizontal_crop_size is not None:
+                    top = max(0, (height - vertical_crop_size) // 2)
+                    bottom = min(height, top + vertical_crop_size)
+                    left = max(0, (width - horizontal_crop_size) // 2)
+                    right = min(width, left + horizontal_crop_size)
                 else:
-                     # トリミングサイズが指定されていない場合、短い辺のサイズに合わせてトリミング
-                    crop_size = min(height, width)
-                    top = (height - crop_size) // 2
-                    bottom = top + crop_size
-                    left = (width - crop_size) // 2
-                    right = left + crop_size
+                    # サイズ指定がない場合は元のサイズを維持
+                    top, bottom, left, right = 0, height, 0, width
 
+                # トリミングされた画像を元のファイルに上書き保存
                 cropped_img = img[top:bottom, left:right]
-
-                # 保存先をinput_dirに変更して上書き保存
                 cv2.imwrite(input_path, cropped_img)
-               #cv2.imwrite(output_path, cropped_img)
 
 class K20114(ImageProcessor):
 
-    def __init__(self):
-        super().__init__(
-            input_dir="/Users/k20114kk/Documents/GitHub/kadai12/img/edit",
-            output_dir="/Users/k20114kk/Documents/GitHub/kadai12/img/saved",
-            crop_size=200 # 画像のトリミングサイズを指定
-        )
+    def __init__(self, input_dir):
+        super().__init__(input_dir)
 
-    def processImage(self, outputFileName: str) -> None:
-        self.process_images() # 画像のトリミングを実行
-        img = self.getEditImage()  # 編集された画像を取得
-        if img is not None:
-            self.exportImage(outputFileName, img) # 編集された画像を指定されたファイル名で保存
+    def processImage(self, vertical_crop_size=None, horizontal_crop_size=None) -> None:
+        # 画像のトリミング処理を実行
+        self.process_images(vertical_crop_size, horizontal_crop_size)
+        img = self.getEditImage()  # PostProcessing内の関数を適切に使用
 
 if __name__ == "__main__":
-    # K20114クラスのインスタンスを作成
-    k20114_instance = K20114()
-    # 画像のトリミングと保存を実行
-    k20114_instance.processImage("output_image.jpg")
+    # ユーザーからの入力を受け取る
+    input_dir = input("画像フォルダの相対パスを入力してください: ")
+    vertical_crop_size = int(input("縦のトリミングサイズを入力してください（単位: ピクセル）: "))
+    horizontal_crop_size = int(input("横のトリミングサイズを入力してください（単位: ピクセル）: "))
+
+    # K20114クラスのインスタンスを生成
+    k20114_instance = K20114(input_dir=input_dir)
+
+    # 画像のトリミング処理を実行
+    k20114_instance.processImage(vertical_crop_size, horizontal_crop_size)
