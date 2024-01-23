@@ -142,7 +142,7 @@ class MainWindow(QMainWindow):
         self.button_dock_widget.setWidget(self.button_widget)
 
 
-        self.addDockWidget(Qt.RightDockWidgetArea, self.button_dock_widget)
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.button_dock_widget)
         self.button_dock_widget.setFloating(False)
 
         self.toolbar_menu = self.menuBar().addMenu("ツールバー")
