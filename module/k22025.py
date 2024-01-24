@@ -20,14 +20,17 @@ class k22025(PostProcessing):
         # 入力画像
         results = model(
             image,
-            project="./edit",
+            project="/Users/k22025kk/work/oop2/lecture13/kadai12/img/edit",
             save=True,
             show=True,
             save_crop=True,
         )
+        # ウィンドウが閉じるのを待つ
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
     k22025 = k22025()
-    k22025.sampleFunc()
-    k22025.exportImage("sample.png")
+    k22025.modelFunc()
+    # k22025.exportImage("sample.png")
