@@ -1,79 +1,35 @@
 import sys
 import os
-from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QColorDialog, QDockWidget
-from PySide6.QtGui import QPainter, QPen, QColor
-from PySide6.QtCore import Qt, QPoint
-
-class DrawingWidget(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.drawing = False
-        self.last_point = QPoint()
-        self.pen_color = QColor('black')
-        self.pen_width = 3
-        self.lines = []
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.drawing = True
-            self.last_point = event.position().toPoint()
-
-    def mouseMoveEvent(self, event):
-        if event.buttons() & Qt.LeftButton and self.drawing:
-            line_segment = (self.last_point, event.position().toPoint(), self.pen_color, self.pen_width)
-            self.lines.append(line_segment)
-            self.last_point = event.position().toPoint()
-            self.update()
-
-    def mouseReleaseEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.drawing = False
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        for line in self.lines:
-            pen = QPen(line[2], line[3], Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
-            painter.setPen(pen)
-            painter.drawLine(line[0], line[1])
-
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-
-        self.drawing_widget = DrawingWidget()
-        self.setCentralWidget(self.drawing_widget)
-import sys
-import os
-from PySide6.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QColorDialog, QDockWidget, QLabel, QSpinBox, QFileDialog)
+from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QColorDialog, QDockWidget, QLabel, QSpinBox, QFileDialog
 from PySide6.QtGui import QPainter, QPen, QColor
 from PySide6.QtCore import Qt, QPoint
 
 class DrawingWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.drawing = False
-        self.last_point = QPoint()
-        self.pen_color = QColor('black')
-        self.pen_width = 3
+        self.isDrawing = False
+        self.lastPoint = QPoint()
+        self.penColor = QColor('black')
+        self.penWidth = 3
         self.lines = []
-        self.eraser_mode = False
+        self.isEraserMode = False
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.drawing = True
-            self.last_point = event.position().toPoint()
+            self.isDrawing = True
+            self.lastPoint = event.position().toPoint()
 
     def mouseMoveEvent(self, event):
-        if event.buttons() & Qt.LeftButton and self.drawing:
-            line_color = self.pen_color if not self.eraser_mode else self.palette().color(self.backgroundRole())
-            line_segment = (self.last_point, event.position().toPoint(), line_color, self.pen_width)
-            self.lines.append(line_segment)
-            self.last_point = event.position().toPoint()
+        if event.buttons() & Qt.LeftButton and self.isDrawing:
+            lineColor = self.penColor if not self.isEraserMode else self.palette().color(self.backgroundRole())
+            lineSegment = (self.lastPoint, event.position().toPoint(), lineColor, self.penWidth)
+            self.lines.append(lineSegment)
+            self.lastPoint = event.position().toPoint()
             self.update()
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.drawing = False
+            self.isDrawing = False
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -82,9 +38,9 @@ class DrawingWidget(QWidget):
             painter.setPen(pen)
             painter.drawLine(line[0], line[1])
 
-    def save_drawing(self, file_path):
+    def saveDrawing(self, filePath):
         pixmap = self.grab()
-        pixmap.save(file_path, 'PNG')
+        pixmap.save(filePath, 'PNG')
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -92,98 +48,89 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("お絵描きアプリ")
         self.resize(1000, 600)
 
-        self.drawing_widget = DrawingWidget(self)
-        self.setCentralWidget(self.drawing_widget)
+        self.drawingWidget = DrawingWidget(self)
+        self.setCentralWidget(self.drawingWidget)
 
-        self.initUI()
+        self.initUi()
 
-    def initUI(self):
-        self.status_bar = self.statusBar()
-        self.status_label = QLabel()
-        self.status_bar.addPermanentWidget(self.status_label)
-        self.update_status_bar()
+    def initUi(self):
+        self.statusBarWidget = self.statusBar()
+        self.statusLabel = QLabel()
+        self.statusBarWidget.addPermanentWidget(self.statusLabel)
+        self.updateStatusBar()
 
-        self.button_layout = QVBoxLayout()
-        self.button_layout.setSpacing(10)
-        self.button_layout.setContentsMargins(10, 10, 10, 10)
-        self.button_layout.addStretch() 
+        self.buttonLayout = QVBoxLayout()
+        self.buttonLayout.setSpacing(10)
+        self.buttonLayout.setContentsMargins(10, 10, 10, 10)
 
-        self.color_button = QPushButton("色を選択")
-        self.color_button.clicked.connect(self.choose_color)
-        self.button_layout.addWidget(self.color_button)
+        self.colorButton = QPushButton("色を選択")
+        self.colorButton.clicked.connect(self.chooseColor)
+        self.buttonLayout.addWidget(self.colorButton)
 
-        
+        self.penWidthLabel = QLabel("ペンの太さ")
+        self.buttonLayout.addWidget(self.penWidthLabel)
 
-        self.pen_width_label = QLabel("ペンの太さ")
-        self.button_layout.addWidget(self.pen_width_label)
+        self.penWidthSpinBox = QSpinBox()
+        self.penWidthSpinBox.setRange(1, 50)
+        self.penWidthSpinBox.setValue(self.drawingWidget.penWidth)
+        self.penWidthSpinBox.valueChanged.connect(self.changePenWidth)
+        self.buttonLayout.addWidget(self.penWidthSpinBox)
 
-        self.pen_width_spinbox = QSpinBox()
-        self.pen_width_spinbox.setRange(1, 50)
-        self.pen_width_spinbox.setValue(self.drawing_widget.pen_width)
-        self.pen_width_spinbox.valueChanged.connect(self.change_pen_width)
-        self.button_layout.addWidget(self.pen_width_spinbox)
+        self.toggleButton = QPushButton("ペン/消しゴム切り替え")
+        self.toggleButton.clicked.connect(self.toggleEraser)
+        self.buttonLayout.addWidget(self.toggleButton)
 
-        
+        self.saveButton = QPushButton("絵を保存")
+        self.saveButton.clicked.connect(self.saveDrawing)
+        self.buttonLayout.addWidget(self.saveButton)
 
-        self.toggle_button = QPushButton("ペン/消しゴム切り替え")
-        self.toggle_button.clicked.connect(self.toggle_eraser)
-        self.button_layout.addWidget(self.toggle_button)
+        self.buttonDockWidget = QDockWidget("ツールバー", self)
+        self.buttonWidget = QWidget(self)
+        self.buttonWidget.setLayout(self.buttonLayout)
+        self.buttonDockWidget.setWidget(self.buttonWidget)
 
-        self.save_button = QPushButton("絵を保存")
-        self.save_button.clicked.connect(self.save_drawing)
-        self.button_layout.addWidget(self.save_button)
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.buttonDockWidget)
+        self.buttonDockWidget.setFloating(False)
 
-        self.button_dock_widget = QDockWidget("ツールバー", self)
+        self.toolbarMenu = self.menuBar().addMenu("ツールバー")
+        self.toolbarMenu.addAction("ツールバーを表示", self.toggleToolbar)
 
-        self.button_layout.addStretch() 
-
-        self.button_widget = QWidget(self)
-        self.button_widget.setLayout(self.button_layout)
-        self.button_dock_widget.setWidget(self.button_widget)
-
-
-        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.button_dock_widget)
-        self.button_dock_widget.setFloating(False)
-
-        self.toolbar_menu = self.menuBar().addMenu("ツールバー")
-        self.toolbar_menu.addAction("ツールバーを表示", self.toggle_toolbar)
-
-    def choose_color(self):
-        self.drawing_widget.eraser_mode = False
+    def chooseColor(self):
+        self.drawingWidget.isEraserMode = False
         color = QColorDialog.getColor()
         if color.isValid():
-            self.drawing_widget.pen_color = color
-            self.update_status_bar()
+            self.drawingWidget.penColor = color
+            self.updateStatusBar()
 
-    def change_pen_width(self, width):
-        self.drawing_widget.pen_width = width
-        self.update_status_bar()
+    def changePenWidth(self, width):
+        self.drawingWidget.penWidth = width
+        self.updateStatusBar()
 
-    def toggle_eraser(self):
-        self.drawing_widget.eraser_mode = not self.drawing_widget.eraser_mode
-        self.update_status_bar()
+    def toggleEraser(self):
+        self.drawingWidget.isEraserMode = not self.drawingWidget.isEraserMode
+        self.updateStatusBar()
 
-    def save_drawing(self):
-        default_dir = "./img/saved"
-        default_path = os.path.join(default_dir, "untitled.png")
-        if not os.path.exists(default_dir):
-            os.makedirs(default_dir)
-        file_path, _ = QFileDialog.getSaveFileName(self, "絵を保存", default_path, "PNG Files (*.png);;JPEG Files (*.jpg);;All Files (*)")
-        if file_path:
-            self.drawing_widget.save_drawing(file_path)
+    def saveDrawing(self):
+        defaultDir = "./img/saved"
+        defaultPath = os.path.join(defaultDir, "untitled.png")
+        if not os.path.exists(defaultDir):
+            os.makedirs(defaultDir)
+        filePath, _ = QFileDialog.getSaveFileName(self, "絵を保存", defaultPath, "PNG Files (*.png);;JPEG Files (*.jpg);;All Files (*)")
+        if filePath:
+            self.drawingWidget.saveDrawing(filePath)
 
-    def update_status_bar(self):
-        color = self.drawing_widget.pen_color
-        width = self.drawing_widget.pen_width
-        tool = "消しゴム" if self.drawing_widget.eraser_mode else "ペン"
-        self.status_label.setText(f"{tool} - 色: <span style='color: {color.name()};'>{color.name()}</span>, 太さ: {width}")
-        self.status_label.setTextFormat(Qt.RichText)
+    def updateStatusBar(self):
+        color = self.drawingWidget.penColor
+        width = self.drawingWidget.penWidth
+        tool = "消しゴム" if self.drawingWidget.isEraserMode else "ペン"
+        self.statusLabel.setText(f"{tool} - 色: <span style='color: {color.name()};'>{color.name()}</span>, 太さ: {width}")
+        self.statusLabel.setTextFormat(Qt.RichText)
 
-    def toggle_toolbar(self):
-        self.button_dock_widget.setVisible(not self.button_dock_widget.isVisible())
+    def toggleToolbar(self):
+        self.buttonDockWidget.setVisible(not self.buttonDockWidget.isVisible())
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    main_window = MainWindow()
-    main_window.show()
+    mainWindow = MainWindow()
+    mainWindow.show()
     sys.exit(app.exec())
