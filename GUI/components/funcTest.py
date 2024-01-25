@@ -97,7 +97,7 @@ class ImageApp(QMainWindow):
         self.current_image_paths = []
 
     def upload_image(self):
-        (filenames,) = QFileDialog.getOpenFileNames(
+        filenames, selected_filter = QFileDialog.getOpenFileNames(
             self, "画像を選択", "", "Image Files (*.png *.jpg *.bmp)"
         )
         if filenames:
@@ -115,10 +115,6 @@ class ImageApp(QMainWindow):
             if savepath:
                 pixmap = QPixmap(current_image_path)
                 pixmap.save(savepath)
-
-
-# ここからやること
-# 画像を選択を押してから、フォルダ内の画像を選択できるようにする
 
 
 if __name__ == "__main__":
