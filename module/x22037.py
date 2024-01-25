@@ -10,12 +10,12 @@ class x22037(PostProcessing):
     # これは必須
     def __init__(self):
         super().__init__()
+        self.MotoImage = None
         pass
 
     def lavelObject(self):
-        global MotoImage
         image = self.getEditImage()
-        MotoImage = image.copy()
+        self.MotoImage = image.copy()
         gray_img = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         bin_img = cv2.threshold(gray_img, 180, 255, cv2.THRESH_BINARY_INV)[1]
 
@@ -42,12 +42,12 @@ class x22037(PostProcessing):
         self.saveImage(statsImg)
 
     def eraseOBjects(self, num):
-        grayImg = cv2.cvtColor(MotoImage, cv2.COLOR_RGB2GRAY)
+        grayImg = cv2.cvtColor(self.MotoImage, cv2.COLOR_RGB2GRAY)
         binImg = cv2.threshold(grayImg, 180, 255, cv2.THRESH_BINARY_INV)[1]
 
         retval, labels, stats, centroids = cv2.connectedComponentsWithStats(binImg)
 
-        removeImg = MotoImage.copy()
+        removeImg = self.MotoImage.copy()
         for i in range(stats[num][0], stats[num][0] + stats[num][2]):
             for j in range(stats[num][1], stats[num][1] + stats[num][3]):
                 removeImg[j][i] = 0
