@@ -4,7 +4,7 @@ import os
 from postProcessing import PostProcessing
 
 # 学籍番号のクラスを作成してこんな感じで継承する
-class k22136(PostProcessing):
+class k22136_2(PostProcessing):
     # これは必須
     def __init__(self):
         super().__init__()
@@ -45,7 +45,7 @@ class k22136(PostProcessing):
 # debug用
 if __name__ == "__main__":
 
-    pp = k22136()
+    pp = k22136_2()
 
     # ユーザーによって指定された縦横比を取得
     user_aspect_ratio = float(input("縦横比を入力してください（例: 1.77）: "))
