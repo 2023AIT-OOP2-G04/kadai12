@@ -10,7 +10,7 @@ class Menubar(QMenuBar):
         # 　メニュー１：　ファイル
         self.Menubar1 = self.addMenu("ファイル")
         # 　メニュー２：　TopPageに戻る
-        self.Menubar2 = self.addMenu("TopPageに戻る")
+        self.Menubar2 = self.addMenu("移動")
         # 　メニュー１にアクションを追加
         self.Menubar1.addAction("画像を保存", self.save_image)
         self.Menubar1.addAction("エクスポート", self.export)
