@@ -14,9 +14,6 @@ class K20114(PostProcessing):
         # 画像の読み込みは基本この関数を使う
         image = self.getEditImage()
 
-        # ファイル名の取得
-        input_file = os.path.basename(self.image_path)
-
         # トリミング
         trimmed_image = image[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
 
@@ -24,11 +21,20 @@ class K20114(PostProcessing):
         if not trimmed_image.size:
             print("トリミングした結果が空です。")
             return
-
+        
         # トリミング結果を元の画像に上書き保存
         self.saveImage(trimmed_image)
         print("トリミングが完了しました.")
+        
+    def grayScale(self):
+        # 画像の読み込みは基本この関数を使う
+        image = self.getEditImage()
 
+        # グレースケール化
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        # 画像の保存
+        self.saveImage(gray_image)
        
 # debug用
 if __name__ == "__main__":
