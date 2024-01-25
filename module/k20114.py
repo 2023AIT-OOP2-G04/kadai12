@@ -9,37 +9,28 @@ class K20114(PostProcessing):
         super().__init__()
         pass
 
-    def trim_and_save(self, top_left, bottom_right):
+    def convertToGrayscaleAndSave(self):
+        files = os.listdir(self.editFolderPath)
 
-        # 画像の読み込みは基本この関数を使う
-        image = self.getEditImage()
+        for file_name in files:
+            if file_name.endswith(('.jpg', '.jpeg', '.png')):
+                input_path = os.path.join(self.editFolderPath, file_name)
 
-        # ファイル名の取得
-        input_file = os.path.basename(self.image_path)
+                # 画像の読み込みは基本この関数を使う
+                image = cv2.imread(input_path)
 
-        # トリミング
-        trimmed_image = image[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
+                # 画像を白黒に変換
+                grayscale_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-        # トリミング結果が空でないか確認
-        if not trimmed_image.size:
-            print("トリミングした結果が空です。")
-            return
+                # 画像を上書き保存
+                self.saveImage(grayscale_image)
 
-        # トリミング結果を元の画像に上書き保存
-        self.saveImage(trimmed_image)
-        print("トリミングが完了しました.")
 
-       
 # debug用
 if __name__ == "__main__":
     k20114_instance = K20114()
 
-    # トリミング領域の座標の入力を受け取る
-    top_left_x = int(input("左上のx座標を入力してください: "))
-    top_left_y = int(input("左上のy座標を入力してください: "))
-    bottom_right_x = int(input("右下のx座標を入力してください: "))
-    bottom_right_y = int(input("右下のy座標を入力してください: "))
+    # 画像を白黒に変換して保存
+    k20114_instance.convertToGrayscaleAndSave()
 
-    # トリミングと保存を実行
-    k20114_instance.trim_and_save((top_left_x, top_left_y), (bottom_right_x, bottom_right_y))
-
+    print("画像を白黒に変換して保存しました。")
