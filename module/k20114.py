@@ -29,10 +29,7 @@ class K20114(PostProcessing):
         self.saveImage(trimmed_image)
         print("トリミングが完了しました.")
 
-        # トリミング結果をsavedフォルダに保存
-        self.saveImage(trimmed_image)
-
-
+       
 # debug用
 if __name__ == "__main__":
     k20114_instance = K20114()
