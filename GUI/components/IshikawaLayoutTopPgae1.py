@@ -4,11 +4,13 @@ from PySide6 import QtGui,QtCore
 from PySide6.QtGui import QImage,QPixmap
 import os
 
-class TopPage(QWidget):
-    def __init__(self):
-        super().__init__()
+
+class LayoutTopPage(QWidget):
+    def __init__(self,parent=None):
+        super().__init__(parent=parent)
         self.setWindowTitle('トップページ') # ウィンドウのタイトル
-        self.setGeometry(100,100,600,600) # ウィンドウの位置(x,y)と大きさ(w,h)
+        self.setGeometry(100,100,1600,1200) # ウィンドウの位置(x,y)と大きさ(w,h)
+        self.names = []
 
 
         # メッセージボックスを作成
@@ -38,7 +40,7 @@ class TopPage(QWidget):
             image = QLabel()
             image.setPixmap(QPixmap.fromImage(afterimg))
             layout_image = QHBoxLayout()
-            layout_image.addWidget(image)
+            layout_image.addWidget(image,alignment=QtGui.Qt.AlignHCenter)
             return layout_image
         
         #フォルダ内のファイル名を取得
@@ -47,7 +49,10 @@ class TopPage(QWidget):
                  if fileName != ".gitignore":
                     if fileName != ".DS_Store":
                         print(fileName)
-                        self.layout.addLayout(showImages(path+fileName))
+                        self.names.append(fileName)
+                        layout_image = QHBoxLayout()
+                        layout_image.addLayout(showImages(path+fileName))
+                        self.layout.addLayout(layout_image)
         
         layout_buttons = QHBoxLayout()
         layout_buttons.addLayout(layout_upload)
@@ -56,15 +61,27 @@ class TopPage(QWidget):
         self.layout = QVBoxLayout()
         self.layout.addLayout(layout_message)
         self.layout.addLayout(layout_buttons)
-        showFilesName("./img/edit/")
+
+        showFilesName("./img/saved/")
+
+        # layout_v = QVBoxLayout() 
+        # layout_h = QHBoxLayout()
+        # for i in range(len(self.names)):
+        #     if i%2 == 1:
+        #         showFilesName("./img/saved/")
+        #     else:
+        #         showFilesName("./img/saved/")
+        # # layout_images = QHBoxLayout()
+        # layout_images.addLayout(layout_v)
+        # layout_images.addLayout(layout_h)
+
         # self.layout.addLayout(showFilesName("./img/edit/"))
-
-
         self.setLayout(self.layout)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 
-
-app = QApplication(sys.argv)
-# app.setStyleSheet('QLabel{border: 1px solid black;}')
-main_widget = TopPage()
-main_widget.show()
-app.exec()
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    # app.setStyleSheet('QLabel{border: 1px solid black;}')
+    main_widget = LayoutTopPage()
+    main_widget.show()
+    app.exec()

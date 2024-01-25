@@ -3,8 +3,8 @@ import numpy as np
 import os
 from abc import ABCMeta, abstractmethod
 
-class PostProcessing(metaclass=ABCMeta):
 
+class PostProcessing(metaclass=ABCMeta):
     def __init__(self):
         self.editFolderPath = "./img/edit/"
         self.outputFolderPath = "./img/saved/"
@@ -33,5 +33,3 @@ class PostProcessing(metaclass=ABCMeta):
     def exportImage(self,fileName: str) -> None:
         img=self.getEditImage()
         cv2.imwrite(self.outputFolderPath + fileName,img)
-
-    
