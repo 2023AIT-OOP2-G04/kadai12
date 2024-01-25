@@ -41,22 +41,31 @@ class LayoutTopPage(QWidget):
         layout_buttons.addLayout(layout_download)
 
         self.layout = QVBoxLayout()
+        self.layout.setSpacing(60)
         self.layout.addLayout(layout_message)
         self.layout.addLayout(layout_buttons)
-        self.layoutImages1 = QVBoxLayout()
-        self.layoutImages2 = QVBoxLayout()
+        self.layoutImages=QVBoxLayout()
+        self.layoutImages.setSpacing(100)
+        self.layoutImages.addStretch()
+        
 
         for count,fileName in enumerate(self.fileNames):
             if count%2==0:
-                 self.layoutImages1.addLayout(self.showImage(self.folderPath+fileName))
-                #  print(f"1:{fileName}")
+                self.layoutImagesTmp=QHBoxLayout()
+                self.layoutImagesTmp.addLayout(self.showImage(self.folderPath+fileName))
             else:
-                self.layoutImages2.addLayout(self.showImage(self.folderPath+fileName))
-                # print(f"2:{fileName}")
-        self.layoutImages=QHBoxLayout()
-        self.layoutImages.addLayout(self.layoutImages1)
-        self.layoutImages.addLayout(self.layoutImages2)
-
+                self.layoutImagesTmp.addLayout(self.showImage(self.folderPath+fileName))
+                self.layoutImages.addLayout(self.layoutImagesTmp)
+                self.layoutImages.addStretch()
+        
+        # もし画像の数が奇数ならレイアウトを調整
+        if len(self.fileNames)%2==1:
+            # 架空の画像を生成してレイアウトを埋める
+            layoutFillSpace = self.showImage()
+            self.layoutImagesTmp.addLayout(layoutFillSpace)
+            self.layoutImages.addLayout(self.layoutImagesTmp)
+            self.layoutImages.addStretch()
+    
         self.layout.addLayout(self.layoutImages)
 
         
@@ -64,12 +73,15 @@ class LayoutTopPage(QWidget):
 
 
     #画像の表示関数
-    def showImage(self,imagePath:str) -> QHBoxLayout:
-        beforeimg = QImage(imagePath)
-        afterimg = beforeimg.scaled(300,500,QtCore.Qt.AspectRatioMode.KeepAspectRatio)
-
-        image = QLabel()
-        image.setPixmap(QPixmap.fromImage(afterimg))
+    def showImage(self,imagePath:str=None) -> QHBoxLayout:
+        if imagePath:
+            beforeimg = QImage(imagePath)
+            afterimg = beforeimg.scaled(500,500,QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+            image = QLabel()
+            image.setPixmap(QPixmap.fromImage(afterimg))
+        else:
+            image = QLabel()
+            image.setFixedSize(500,500)
         layout_image = QHBoxLayout()
         layout_image.addWidget(image,alignment=QtGui.Qt.AlignHCenter)
         return layout_image
