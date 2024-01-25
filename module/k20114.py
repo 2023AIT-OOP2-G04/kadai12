@@ -9,7 +9,22 @@ class K20114(PostProcessing):
         super().__init__()
         pass
 
+    def grayScale(self):
+        # 画像の読み込みは基本この関数を使う
+        image = self.getEditImage()
+
+        # グレースケール化
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        # 画像の保存
+        self.saveImage(gray_image)
+
+        print("グレースケール化が完了しました.")
+
+        
+
     def trim_and_save(self, top_left, bottom_right):
+
 
         # 画像の読み込みは基本この関数を使う
         image = self.getEditImage()
