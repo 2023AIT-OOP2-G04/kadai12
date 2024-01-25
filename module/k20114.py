@@ -2,59 +2,59 @@ import cv2
 import os
 from postProcessing import PostProcessing
 
-class ImageProcessor(PostProcessing):
-
-    def __init__(self, input_dir):
+# 学籍番号のクラスを作成してこんな感じで継承する
+class K20114(PostProcessing):
+     # これは必須
+    def __init__(self):
         super().__init__()
-        self.input_dir = input_dir
+        pass
 
-    def process_images(self, vertical_crop_size=None, horizontal_crop_size=None):
-         # 指定されたフォルダ内のファイルを取得
-        files = os.listdir(self.input_dir)
+    def trim_and_save(self, top_left, bottom_right):
+        # 画像の読み込みは基本この関数を使う
+        image = self.getEditImage()
 
-         # フォルダ内の各画像ファイルに対して処理を行う
-        for file_name in files:
-            # 画像ファイルであるかを確認
-            if file_name.endswith(('.jpg', '.jpeg', '.png')):
-                # 画像ファイルのパスを構築
-                input_path = os.path.join(self.input_dir, file_name)
+        # ファイル名の取得
+        input_file = os.path.basename(self.image_path)
 
-                # 画像の読み込み
-                img = cv2.imread(input_path)
-                height, width, _ = img.shape
+        # トリミング
+        trimmed_image = image[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
 
-                # トリミングサイズが指定されていればトリミングを行う
-                if vertical_crop_size is not None and horizontal_crop_size is not None:
-                    top = max(0, (height - vertical_crop_size) // 2)
-                    bottom = min(height, top + vertical_crop_size)
-                    left = max(0, (width - horizontal_crop_size) // 2)
-                    right = min(width, left + horizontal_crop_size)
-                else:
-                    # サイズ指定がない場合は元のサイズを維持
-                    top, bottom, left, right = 0, height, 0, width
+        # トリミング結果が空でないか確認
+        if not trimmed_image.size:
+            print("トリミングした結果が空です。")
+            return
 
-                # トリミングされた画像を元のファイルに上書き保存
-                cropped_img = img[top:bottom, left:right]
-                cv2.imwrite(input_path, cropped_img)
+        # トリミング結果を上書き保存
+        self.saveImage(trimmed_image)
+        print("トリミングが完了しました。")
 
-class K20114(ImageProcessor):
+        # 保存するかどうかの入力
+        self.save_img(trimmed_image, input_file)
 
-    def __init__(self, input_dir):
-        super().__init__(input_dir)
+    # 処理したい画像をedit.pngとして保存し,望む場合はsavedに名前を入力して保存する
+    def save_img(self, src_img, image_name):
+        cv2.imwrite("img/edit/edit.png", src_img)
+        print("保存したい場合は1を入力してください")
+    
+        # ユーザーの入力が空白でないか確認
+        user_input = input().strip()
+        if user_input and user_input.isdigit():
+            flag = int(user_input)
+            if flag == 1:
+                self.exportImage(image_name)
+                print("保存しました")
 
-    def processImage(self, vertical_crop_size=None, horizontal_crop_size=None) -> None:
-        # 画像のトリミング処理を実行
-        self.process_images(vertical_crop_size, horizontal_crop_size)
-        img = self.getEditImage()  # PostProcessing内の関数を適切に使用
-
+# debug用
 if __name__ == "__main__":
-    # ユーザーからの入力を受け取る
-    input_dir = input("画像フォルダの相対パスを入力してください: ")
-    vertical_crop_size = int(input("縦のトリミングサイズを入力してください（単位: ピクセル）: "))
-    horizontal_crop_size = int(input("横のトリミングサイズを入力してください（単位: ピクセル）: "))
+    k20114_instance = K20114()
 
-    # K20114クラスのインスタンスを生成
-    k20114_instance = K20114(input_dir=input_dir)
+    # トリミング領域の座標の入力を受け取る
+    top_left_x = int(input("左上のx座標を入力してください: "))
+    top_left_y = int(input("左上のy座標を入力してください: "))
+    bottom_right_x = int(input("右下のx座標を入力してください: "))
+    bottom_right_y = int(input("右下のy座標を入力してください: "))
 
-    # 画像のトリミング処理を実行
-    k20114_instance.processImage(vertical_crop_size, horizontal_crop_size)
+    # トリミングと保存を実行
+    k20114_instance.trim_and_save((top_left_x, top_left_y), (bottom_right_x, bottom_right_y))
+
+
