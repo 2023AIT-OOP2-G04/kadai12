@@ -58,7 +58,6 @@ class x22037(PostProcessing):
 # debug用
 if __name__ == "__main__":
     x22037 = x22037()
-
     x22037.lavelObject()
 
     # 好きな番号を入力する
