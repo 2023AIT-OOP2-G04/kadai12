@@ -20,7 +20,7 @@ class k22025(PostProcessing):
         # 入力画像
         results = model(
             image,
-            project="/Users/k22025kk/work/oop2/lecture13/kadai12/img/edit",
+            project="./img/edit",
             save=True,
             show=True,
             save_crop=True,
