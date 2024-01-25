@@ -32,8 +32,11 @@ class TopPage(QWidget):
 
         #画像の表示関数
         def showImages(name):
+            beforeimg = QImage(name)
+            afterimg = beforeimg.scaled(300,500,QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+
             image = QLabel()
-            image.setPixmap(QPixmap(name))
+            image.setPixmap(QPixmap.fromImage(afterimg))
             layout_image = QHBoxLayout()
             layout_image.addWidget(image)
             return layout_image
@@ -61,7 +64,7 @@ class TopPage(QWidget):
 
 
 app = QApplication(sys.argv)
-app.setStyleSheet('QLabel{border: 1px solid black;}')
+# app.setStyleSheet('QLabel{border: 1px solid black;}')
 main_widget = TopPage()
 main_widget.show()
 app.exec()
