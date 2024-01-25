@@ -25,15 +25,9 @@ class k22136(PostProcessing):
         # 画像を保存
         self.save_img(hsv_image)
 
-    # 処理したい画像をedit.pngとして保存し,望む場合はsavedに名前を入力して保存する
-    def save_img(self,src_img):
-        cv2.imwrite("img/edit/edit.png", src_img)
-        print("保存したい場合は1を入力してください")
-        flag = int(input())
-        if flag == 1:
-            print("保存するファイル名を入力してください")
-            name = input()
-            cv2.imwrite("img/saved/" + name + ".png", src_img)
+    # 同じファイル名でeditフォルダ内の画像を上書き保存する関数、継承すれば使えるようになります
+    def saveImage(self, img: cv2.Mat) -> None:
+        cv2.imwrite(self.image_path, img)
 
 if __name__ == "__main__":
 
