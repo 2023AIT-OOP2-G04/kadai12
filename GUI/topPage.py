@@ -32,6 +32,9 @@ class TopPage(QMainWindow):
 
         self.setCentralWidget(self.scrollArea)
 
+        # 部品にアクションを追加
+        self.layoutTopPage.buttonOpen.clicked.connect(self.toEditWindowFromOpenFile)
+
     def toEditWindowFromNewFile(self):
         print("new file")
     
