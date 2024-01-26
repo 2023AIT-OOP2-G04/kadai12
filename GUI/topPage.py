@@ -1,6 +1,7 @@
 # ここにトップページのコードを書く
 import sys
 import shutil
+import os
 from PySide6.QtWidgets import *
 from PySide6 import QtGui,QtCore
 
@@ -36,6 +37,7 @@ class TopPage(QMainWindow):
         self.layoutTopPage.buttonOpen.clicked.connect(self.toEditWindowFromOpenFile)
         for pixImage in self.layoutTopPage.pixImages:
             pixImage.openAction=lambda x=pixImage: self.toEditWindowFromSavedFile(x.imagePath)
+            pixImage.saveAction=lambda x=pixImage: self.toExportImageFromSavedFile(x.imagePath)
 
 
     def toEditWindowFromNewFile(self):
@@ -44,7 +46,7 @@ class TopPage(QMainWindow):
     def toEditWindowFromOpenFile(self):
         # print("open file")
         # QFileDialogを作成して画像ファイルのファイルパスを取得
-        filePath = QFileDialog.getOpenFileName(self, "Open Image", "./", "Image Files (*.png *.jpg *.bmp)")[0]
+        filePath = QFileDialog.getOpenFileName(self, "画像を開く", "./", "Image Files (*.png *.jpg *.bmp)")[0]
         print(filePath)
         # ファイルパスが空でなければ画像を./img/savedと./img/editにコピー
         if filePath !="":
@@ -58,9 +60,22 @@ class TopPage(QMainWindow):
             shutil.copy(imagePath,"./img/edit")
             self.openEditWindow()
     
+    def get_download_folder_path(self):
+        # 一般的なOSでのダウンロードフォルダのパスを返す
+        if os.name == 'nt':  # Windowsの場合
+            return os.path.join(os.path.expanduser('~'), 'Downloads')
+        else:  # macOSやLinuxの場合
+            return os.path.expanduser('~/Downloads')
+
     def toExportImageFromSavedFile(self,imagePath=None):
         # print(f"export {imagePath}")
-        pass
+        if imagePath!="":
+            defaultDir = self.get_download_folder_path()
+            defaultPath = os.path.join(defaultDir, imagePath.split("/")[-1].split(".")[0]+"_export."+imagePath.split("/")[-1].split(".")[1])
+            print(defaultPath)
+            filePath, _ = QFileDialog.getSaveFileName(self, "画像をエクスポート", defaultPath, "PNG Files (*.png);;JPEG Files (*.jpg);;All Files (*)")
+            if filePath:
+                shutil.copy(imagePath,filePath)
         
 
 
