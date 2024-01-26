@@ -56,6 +56,13 @@ class TopPage(QMainWindow):
             pixImage.saveAction=lambda x=pixImage: self.toExportImageFromSavedFile(x.imagePath)
 
 
+    # editフォルダ内の画像をリセットする関数
+    def resetEditFolder(self):
+        # editフォルダ内の.gitingoreと.DS_Storeを除いたファイルを削除
+        for f in os.listdir("./img/edit"):
+            if os.path.isfile(os.path.join("./img/edit", f)) and f != ".gitignore" and f != ".DS_Store":
+                os.remove(os.path.join("./img/edit", f))
+
     def toEditWindowFromNewFile(self):
         print("new file")
     
@@ -67,12 +74,14 @@ class TopPage(QMainWindow):
         # ファイルパスが空でなければ画像を./img/savedと./img/editにコピー
         if filePath !="":
             shutil.copy(filePath,"./img/saved")
+            self.resetEditFolder()
             shutil.copy(filePath,"./img/edit")
             self.openEditWindow()
 
     def toEditWindowFromSavedFile(self,imagePath=None):
         # print(f"open {imagePath}")
         if imagePath!="":
+            self.resetEditFolder()
             shutil.copy(imagePath,"./img/edit")
             self.openEditWindow()
     

@@ -29,7 +29,7 @@ class SecondWindow(QMainWindow):
         self.setGeometry(600, 100, 400, 300)
 
         self.label = QLabel("これは仮のウィンドウです。閉じたら戻ります。", self)
-        self.label.setGeometry(100, 100, 200, 50)
+        self.label.setGeometry(100, 100, 400, 50)
 
     def closeEvent(self, event):
         self.closed.emit()  # Emit the closed signal
