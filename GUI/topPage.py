@@ -34,6 +34,9 @@ class TopPage(QMainWindow):
 
         # 部品にアクションを追加
         self.layoutTopPage.buttonOpen.clicked.connect(self.toEditWindowFromOpenFile)
+        for pixImage in self.layoutTopPage.pixImages:
+            pixImage.openAction=lambda x=pixImage: self.toEditWindowFromSavedFile(x.imagePath)
+
 
     def toEditWindowFromNewFile(self):
         print("new file")
@@ -48,6 +51,16 @@ class TopPage(QMainWindow):
             shutil.copy(filePath,"./img/saved")
             shutil.copy(filePath,"./img/edit")
             self.openEditWindow()
+
+    def toEditWindowFromSavedFile(self,imagePath=None):
+        # print(f"open {imagePath}")
+        if imagePath!="":
+            shutil.copy(imagePath,"./img/edit")
+            self.openEditWindow()
+    
+    def toExportImageFromSavedFile(self,imagePath=None):
+        # print(f"export {imagePath}")
+        pass
         
 
 
