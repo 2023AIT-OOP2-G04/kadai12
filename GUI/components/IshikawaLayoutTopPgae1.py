@@ -19,26 +19,28 @@ class LayoutTopPage(QWidget):
     def initUI(self):
         
         # メッセージボックスを作成
-        message = QLabel("ここにメッセージを書きます。",alignment = QtCore.Qt.AlignCenter)
-        message.setFixedSize(300,200)
+        message = QLabel('''
+                        <strong style="font-size: 32px;">PostProcesser（ポストプロセッサー）へようこそ！</strong><br>
+                        <p style="font-size: 14px;">画像を開く場合は下のボタンかメニューバーの「ファイル」 >> 「開く」から</p>
+                        <p style="font-size: 14px;">お絵描きから始める場合はメニューバーの「ファイル」 >> 「新規作成」からお願いします。</p>
+                         ''',alignment = QtCore.Qt.AlignCenter)
+        message.setFixedSize(700,200)
         layout_message = QHBoxLayout()
         layout_message.addWidget(message)
 
-        # アップロードボタンを作成
-        self.button = QPushButton("アップロード")
-        self.button.clicked.connect(lambda x: print("uploaded"))
-        layout_upload = QHBoxLayout()
-        layout_upload.addWidget(self.button)
+        # 画像を開くボタンを作成
+        self.buttonOpen = QPushButton("画像を開く")
+        self.buttonOpen.setFixedSize(200,100)
+        # 背景色を青色に設定
+        self.buttonOpen.setStyleSheet("background-color: #42A5F5")
 
-        # ダウンロードボタンを作成
-        self.button = QPushButton("ダウンロード")
-        self.button.clicked.connect(lambda x: print("downloaded"))
-        layout_download = QHBoxLayout()
-        layout_download.addWidget(self.button)
+        # self.buttonOpen.clicked.connect(lambda x: print("open"))
+        layout_open = QHBoxLayout()
+        layout_open.addWidget(self.buttonOpen)
+
 
         layout_buttons = QHBoxLayout()
-        layout_buttons.addLayout(layout_upload)
-        layout_buttons.addLayout(layout_download)
+        layout_buttons.addLayout(layout_open)
 
         self.layout = QVBoxLayout()
         self.layout.setSpacing(60)
