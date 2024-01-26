@@ -28,7 +28,7 @@ class SecondWindow(QMainWindow):
         self.setWindowTitle("Second Window")
         self.setGeometry(600, 100, 400, 300)
 
-        self.label = QLabel("This is the second window.", self)
+        self.label = QLabel("これは仮のウィンドウです。閉じたら戻ります。", self)
         self.label.setGeometry(100, 100, 200, 50)
 
     def closeEvent(self, event):

@@ -22,7 +22,23 @@ class TopPage(QMainWindow):
     def initUI(self):
 
         # menuバーの設定
+
         self.fileMenu = self.menuBar().addMenu("ファイル")
+        self.fileMenu.setStyleSheet("""
+            QMenu {
+                font-size: 16pt;
+                padding: 10px;
+            }
+            QMenu::item {
+                padding: 10px 20px;
+                background-color: transparent;
+            }
+            QMenu::item:selected, QMenu::item:hover {
+                background-color: #0078d7; /* ハイライト時の背景色 */
+                color: white;              /* ハイライト時のテキスト色 */
+            }
+        """)
+
         self.fileMenu.addAction("新規作成", self.toEditWindowFromNewFile)
         self.fileMenu.addAction("開く", self.toEditWindowFromOpenFile)
 
