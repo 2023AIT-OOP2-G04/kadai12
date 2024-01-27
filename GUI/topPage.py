@@ -110,6 +110,10 @@ class TopPage(QMainWindow):
         self.editWindow.closed.connect(self.show)  # Connect to the closed signal
         self.editWindow.show()
 
+    def showEvent(self, event):
+        self.initUI()
+        super().showEvent(event)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
