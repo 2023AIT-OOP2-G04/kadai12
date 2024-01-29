@@ -1,12 +1,13 @@
 import sys
 from PySide6.QtWidgets import *
+from PySide6.QtCore import Qt
 from PySide6 import QtGui,QtCore
 import os
 
 # 画像を表示するウィンドウのクラス
 class ImageWindow(QLabel):
     # 画像のサイズはデフォルトで800x600
-    def __init__(self,parent:QWidget | None=None,width:int=800,height:int=600):
+    def __init__(self,parent: QDockWidget| None=None,width:int=800,height:int=600):
         super(ImageWindow, self).__init__(parent)
         self.imagePath=None
         self.width=width
@@ -36,12 +37,18 @@ class ImageWindow(QLabel):
             # print("画像が見つかりませんでした")
             self.setText("画像が見つかりませんでした")
 
-class DebugWindow(QWidget):
+class DebugWindow(QMainWindow):
     def __init__(self, parent=None):
         super(DebugWindow, self).__init__(parent)
         self.setWindowTitle("デバッグ用ウィンドウ")
         self.resize(800, 600)
-        self.imageWindow=ImageWindow(parent=self)
+        #self.imageWindow=ImageWindow(parent=self)
+        self.imageDock = QDockWidget("canvas",self)
+        self.imageWindow = QWidget()
+        ImageWindow(self.imageWindow)
+        self.imageDock.setWidget(self.imageWindow)
+
+        self.addDockWidget(Qt.RightDockWidgetArea, self.imageDock)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
