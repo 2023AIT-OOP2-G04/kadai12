@@ -7,6 +7,8 @@ from PySide6.QtCore import Qt, QPoint,QRect,QSize
 class DrawingWidget(QWidget):
     def __init__(self,imagePath=None, parent=None):
         super().__init__(parent)
+
+
         self.isDrawing = False
         self.lastPoint = QPoint()
         self.penColor = QColor('black')
@@ -15,14 +17,19 @@ class DrawingWidget(QWidget):
         self.isEraserMode = False
         self.penStyle = Qt.SolidLine  # デフォルトのペンスタイル
         self.tool = None  # 現在選択されているツール（'pen', 'eraser', None）
+        self.scaleFactor = 1.0  # 拡大・縮小率の初期値
         self.imagePath = imagePath
         if imagePath:
-            self.originalImage = QPixmap(imagePath)  # 元の画像を保持
-            self.image = QPixmap(self.originalImage)  # 描画用のコピー
+            self.openImage(imagePath)
+            self.setMinimumSize(self.image.size())  # イメージのサイズに基づいて最小サイズを設定
         else:
+            # デフォルトの名前
+            self.imagePath = "./img/edit/untitled.png"
             self.originalImage = QPixmap(800, 600)  # デフォルトの画像サイズ
             self.originalImage.fill(Qt.white)
             self.image = QPixmap(self.originalImage)
+            self.image.save(self.imagePath, 'PNG')
+            self.setMinimumSize(800, 600)  # ウィジェットの最小サイズを設定
 
     def setTool(self, tool):
         self.tool = tool
@@ -30,11 +37,16 @@ class DrawingWidget(QWidget):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.isDrawing = True
-            self.lastPoint = event.position().toPoint()
+            # self.lastPoint = event.position().toPoint()
+            # マウスイベントの位置をスケーリング
+            self.lastPoint = event.position().toPoint() / self.scaleFactor
+
 
     def mouseMoveEvent(self, event):
         if event.buttons() & Qt.LeftButton and self.isDrawing and self.tool:
             painter = QPainter(self.image)
+            # マウスイベントの位置をスケーリング
+            newPoint = event.position().toPoint() / self.scaleFactor
             if self.tool == 'eraser':
                 # 消しゴムモード時は元の画像からピクセルを復元
                 eraserRect = QRect(self.lastPoint, QSize(self.penWidth, self.penWidth))
@@ -42,8 +54,8 @@ class DrawingWidget(QWidget):
             elif self.tool == 'pen':
                 pen = QPen(self.penColor, self.penWidth, self.penStyle)
                 painter.setPen(pen)
-                painter.drawLine(self.lastPoint, event.position().toPoint())
-            self.lastPoint = event.position().toPoint()
+                painter.drawLine(self.lastPoint,newPoint)
+            self.lastPoint = newPoint
             self.update()
 
     def mouseReleaseEvent(self, event):
@@ -52,7 +64,8 @@ class DrawingWidget(QWidget):
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.drawPixmap(QPoint(), self.image)
+        scaledImage = self.image.scaled(self.image.size() * self.scaleFactor, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        painter.drawPixmap(QPoint(), scaledImage)
 
 
     def saveDrawing(self, filePath):
@@ -71,7 +84,9 @@ class DrawingWidget(QWidget):
     def openImage(self, imagePath):
         self.originalImage = QPixmap(imagePath)  # 元の画像を保持
         self.image = QPixmap(self.originalImage)  # 描画用のコピー
-        self.update()
+        if not self.image.isNull():
+            self.resize(self.image.size())  # ウィジェットのサイズを画像のサイズに更新
+            self.update()  # ウィジェットを再描画
 
     def saveImage(self, imagePath):
         self.image.save(imagePath)
@@ -80,6 +95,10 @@ class DrawingWidget(QWidget):
         # 画像を初期状態に戻す
         self.image = QPixmap(self.originalImage)
         self.update()
+
+    def setScaleFactor(self, scale):
+        self.scaleFactor = scale
+        self.update()  # ウィジェットを再描画
 
 class PenSettingsDialog(QDialog):
     def __init__(self, parent=None):
@@ -154,11 +173,17 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("お絵描きアプリ")
         self.resize(1000, 600)
 
-        self.drawingWidget = DrawingWidget(parent=self)
-        self.setCentralWidget(self.drawingWidget)
+        
+
+        
+
+        self.drawingWidget = DrawingWidget(imagePath="./img/edit/20240111_141517.jpg",parent=self)
+        self.scrollArea = QScrollArea()  # スクロールエリアを作成
+        self.scrollArea.setWidget(self.drawingWidget)  # DrawingWidgetをスクロールエリアに設定
+        self.scrollArea.setWidgetResizable(True)  # スクロールエリアのサイズ変更を可能にする
+        self.setCentralWidget(self.scrollArea)  # スクロールエリアをメインウィンドウの中央のウィジェットとして設定
 
         self.initUi()  # UIを初期化する
-        self.updateStatusBar()  # ステータスバーを更新する
 
         self.openImageButton = QPushButton("画像を開く")
         self.openImageButton.clicked.connect(self.openImage)
@@ -215,6 +240,14 @@ class MainWindow(QMainWindow):
 
         self.buttonLayout.addStretch() 
 
+        # 拡大・縮小のスライダーまたはスピンボックスの設定
+        self.scaleSpinBox = QSpinBox()
+        self.scaleSpinBox.setRange(10, 400)  # 10% から 400% の範囲
+        self.scaleSpinBox.setValue(100)  # 初期値は 100%
+        self.scaleSpinBox.valueChanged.connect(self.changeScale)
+        self.buttonLayout.addWidget(QLabel("スケール:"))
+        self.buttonLayout.addWidget(self.scaleSpinBox)
+
         self.buttonDockWidget = QDockWidget("ツールバー", self)
         self.buttonWidget = QWidget(self)
         self.buttonWidget.setLayout(self.buttonLayout)
@@ -225,26 +258,6 @@ class MainWindow(QMainWindow):
 
         self.toolbarMenu = self.menuBar().addMenu("ツールバー")
         self.toolbarMenu.addAction("ツールバーを表示", self.toggleToolbar)
-
-    def chooseColor(self):
-        self.drawingWidget.isEraserMode = False
-        color = QColorDialog.getColor()
-        if color.isValid():
-            self.drawingWidget.penColor = color
-            self.updateStatusBar()
-
-    def changePenWidth(self, width):
-        self.drawingWidget.penWidth = width
-        self.updateStatusBar()
-
-    def changePenStyle(self, index):
-        style = self.penStyleComboBox.itemData(index)
-        self.drawingWidget.setPenStyle(style)
-        self.updateStatusBar()
-
-    def toggleEraser(self):
-        self.drawingWidget.isEraserMode = not self.drawingWidget.isEraserMode
-        self.updateStatusBar()
 
     def saveDrawing(self):
         defaultDir = "./img/saved"
@@ -257,16 +270,6 @@ class MainWindow(QMainWindow):
 
     def clearDrawing(self):
         self.drawingWidget.clearImage()
-
-    def updateStatusBar(self):
-        pass
-        # color = self.drawingWidget.penColor
-        # width = self.drawingWidget.penWidth
-        # tool = "消しゴム" if self.drawingWidget.isEraserMode else "ペン"
-        #  # ペンスタイルの名前を取得してステータスバーに表示
-        # penStyleName = self.penStyleComboBox.currentText()
-        # self.statusLabel.setText(f"{tool} - 色: <span style='color: {color.name()};'>{color.name()}</span>, 太さ: {width}, スタイル: {penStyleName}")
-        # self.statusLabel.setTextFormat(Qt.RichText)
 
     def toggleToolbar(self):
         self.buttonDockWidget.setVisible(not self.buttonDockWidget.isVisible())
@@ -317,6 +320,10 @@ class MainWindow(QMainWindow):
         self.setStyleForButton(self.penButton, button == self.penButton)
         self.setStyleForButton(self.eraserButton, button == self.eraserButton)
         self.setStyleForButton(self.noneButton, button == self.noneButton)
+
+    def changeScale(self, value):
+        scaleFactor = value / 100.0  # スピンボックスの値をスケールファクタに変換
+        self.drawingWidget.setScaleFactor(scaleFactor)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
