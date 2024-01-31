@@ -262,7 +262,7 @@ class ObjectDetectionDialog(QDialog):
 class ObjectDetectionCutDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        self.setWindowTitle('トップページ') # ウィンドウのタイトル
+        self.setWindowTitle('保存したい画像をクリックしてください') # ウィンドウのタイトル
         self.setGeometry(100,100,800,1200) # ウィンドウの位置(x,y)と大きさ(w,h)
         self.fileNames = []
         self.defaultDir="./img/tmp/predict/crops"
