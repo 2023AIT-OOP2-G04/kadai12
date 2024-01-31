@@ -10,9 +10,9 @@ class k22025(PostProcessing):
         super().__init__()
         pass
 
-    def resize_image(input_path):
+    def resize_image(self,image):
         # 画像を読み込む
-        image = cv2.imread(input_path)
+        
 
         new_width = 800
         new_height = 600
@@ -21,7 +21,7 @@ class k22025(PostProcessing):
         resized_image = cv2.resize(image, (new_width, new_height))
 
         # リサイズ後の画像を保存
-        cv2.imwrite(image, resized_image)
+        self.saveImage(resized_image)
 
         # ウィンドウに表示する場合
         # cv2.imshow("Resized Image", resized_image)
@@ -34,14 +34,14 @@ class k22025(PostProcessing):
         self.resize_image(image)
 
         # モデル読み込み
-        model = YOLO("yolov8x-seg.pt")
+        model = YOLO("./data/yolov8x-seg.pt")
 
         # 入力画像
         results = model(
             image,
-            project=".img/tmp",
+            project="./img/tmp",
             save=True,
-            show=True,
+            show=False,
             save_crop=True,
         )
         # ウィンドウが閉じるのを待つ
