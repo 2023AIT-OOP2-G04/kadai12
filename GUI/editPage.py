@@ -11,6 +11,7 @@ from components.Menubar import Menubar
 from components.toolBar import ToolBar
 from components.imageWindow import ImageWindow
 from components.scroll import ScrollArea
+from components.paintImageWindow import DrawingWidget,PenSettingsDialog,EraserSettingsDialog
 
 class EditPage(QMainWindow):
     closed = Signal()  # Signal to indicate the window is closed
@@ -35,25 +36,22 @@ class EditPage(QMainWindow):
 
         
 
-        #キャンバス
-        self.imageWindow = ImageWindow()  # キャンバスを作成
-        self.setCentralWidget(self.imageWindow) # キャンバスをセントラルウィジェットに設定
-        self.scrollArea = ScrollArea(self)  # スクロールエリアを作成
-        self.layout = QVBoxLayout(self) # レイアウトを作成
-        self.layout.addWidget(self.scrollArea)  # レイアウトにスクロールエリアを追加
-        self.imageWindow = ImageWindow(self,width=4000,height=3000)    # スクロールエリアに追加するウィジェットを作成
-        self.scrollArea.addWidget(self.imageWindow) # スクロールエリアにウィジェットを追加
+        # #キャンバス
+        self.drawingWidget = DrawingWidget(imagePath=self.getEditImagePath(),parent=self)
+        self.scrollArea = QScrollArea()  # スクロールエリアを作成
+        self.scrollArea.setWidget(self.drawingWidget)  # DrawingWidgetをスクロールエリアに設定
+        self.scrollArea.setWidgetResizable(True)  # スクロールエリアのサイズ変更を可能にする
 
          # メインレイアウト
         layoutMain = QVBoxLayout()
         layoutMain.addWidget(messageArea,1)
-        layoutMain.addWidget(self.scrollArea,4)
+        layoutMain.addWidget(self.scrollArea,6)
         
 
         # メインウィジェットにメインレイアウトを設定
-        widgetMain = QWidget()
-        widgetMain.setLayout(layoutMain)
-        self.setCentralWidget(widgetMain)
+        self.mainWidget = QWidget()
+        self.mainWidget.setLayout(layoutMain)
+        self.setCentralWidget(self.mainWidget)  # スクロールエリアをメインウィンドウの中央のウィジェットとして設定
 
     def createDockBar(self):
         #ツールバー
@@ -70,6 +68,7 @@ class EditPage(QMainWindow):
         self.menuBars.closeAction = lambda x=None: self.close()
         self.menuBars.saveAction = lambda x=None: self.SaveImage()
         self.menuBars.exportAction = lambda x=None: self.SaveImage(exportFlg=True)
+        self.menuBars.toolbarAction = lambda x=None: self.toggleToolbar()
         
         self.menuBars.updateAction()
 
@@ -79,6 +78,7 @@ class EditPage(QMainWindow):
         for f in os.listdir("./img/edit"):
             if os.path.isfile(os.path.join("./img/edit", f)) and f != ".gitignore" and f != ".DS_Store":
                 return os.path.join("./img/edit", f)
+        return None
 
     def get_download_folder_path(self):
         # 一般的なOSでのダウンロードフォルダのパスを返す
@@ -86,6 +86,49 @@ class EditPage(QMainWindow):
             return os.path.join(os.path.expanduser('~'), 'Downloads')
         else:  # macOSやLinuxの場合
             return os.path.expanduser('~/Downloads')
+
+    def clearDrawing(self):
+        self.drawingWidget.clearImage()
+
+    def toggleToolbar(self):
+        self.toolDock.setVisible(not self.toolDock.isVisible())
+
+    def setStyleForButton(self, button:QPushButton, isSelected:bool):
+        if isSelected:
+            button.setStyleSheet("""
+                QPushButton {
+                    background-color:  #42A5F5;
+                    border-radius: 5px;  /* 角を丸くする */
+                    padding: 5px;        /* パディングを追加 */
+                }
+            """)
+        else:
+            button.setStyleSheet("")
+
+    def changeTool(self, button):
+        id = self.toolButtonGroup.id(button)
+        if id == 2:
+            self.drawingWidget.setTool('pen')
+            # ペン設定ウィンドウを表示
+            dialog = PenSettingsDialog(self)
+            if dialog.exec():
+                self.drawingWidget.setPenStyle(dialog.styleComboBox.currentData())
+                self.drawingWidget.setPenWidth(dialog.widthSpinBox.value())
+                self.drawingWidget.setPenColor(dialog.color)
+        elif id == 3:
+            self.drawingWidget.setTool('eraser')
+            # 消しゴム設定ウィンドウを表示
+            dialog = EraserSettingsDialog(self)
+            if dialog.exec():
+                self.drawingWidget.setPenWidth(dialog.widthSpinBox.value())
+        else:
+            # どのツールも選択されていない
+            self.drawingWidget.setTool(None)
+        
+        # 選択されたボタンのスタイルを更新
+        self.setStyleForButton(self.penButton, button == self.penButton)
+        self.setStyleForButton(self.eraserButton, button == self.eraserButton)
+        self.setStyleForButton(self.noneButton, button == self.noneButton)
 
     def SaveImage(self,exportFlg=False):
         imagePath = self.getEditImagePath()

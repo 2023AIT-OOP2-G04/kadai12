@@ -11,6 +11,9 @@ class Menubar(QMenuBar):
         self.Menubar1 = self.addMenu("ファイル")
         # 　メニュー２：　TopPageに戻る
         self.Menubar2 = self.addMenu("移動")
+        # 　メニュー３：　ツールバー
+        self.toolbarMenu = self.addMenu("ウィンドウ")
+
         # 　メニュー１にアクションを追加
         self.saveAction=lambda x=None: print("Hello! from saveAction")
         self.exportAction=lambda x=None: print("Hello! from export")
@@ -20,6 +23,9 @@ class Menubar(QMenuBar):
         # 　メニュー２にアクションを追加
         self.closeAction=lambda x=None: print("Hello! from closeAction")
         self.Menubar2.addAction("TopPageに戻る", self.closeAction)
+        # 　メニュー３にアクションを追加
+        self.toolbarAction = lambda x=None: print("Hello! from toolbarAction")
+        self.toolbarMenu.addAction("ツールバー", self.toolbarAction)
     
     def updateAction(self):
         self.Menubar1.clear()
@@ -27,6 +33,8 @@ class Menubar(QMenuBar):
         self.Menubar1.addAction("エクスポート", self.exportAction)
         self.Menubar2.clear()
         self.Menubar2.addAction("TopPageに戻る", self.closeAction)
+        self.toolbarMenu.clear()
+        self.toolbarMenu.addAction("ツールバー", self.toolbarAction)
 
 
 class DebugWindow(QMainWindow):
