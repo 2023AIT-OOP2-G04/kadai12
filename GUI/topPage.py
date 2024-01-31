@@ -17,10 +17,11 @@ class TopPage(QMainWindow):
         # ウィンドウの設定
         self.setWindowTitle("PostProcesser")
         self.setGeometry(100, 100, 1600, 1000)
+        self.createMenuBar()
         self.initUI()
 
-    def initUI(self):
 
+    def createMenuBar(self):
         # menuバーの設定
 
         self.fileMenu = self.menuBar().addMenu("ファイル")
@@ -41,6 +42,9 @@ class TopPage(QMainWindow):
 
         self.fileMenu.addAction("新規作成", self.toEditWindowFromNewFile)
         self.fileMenu.addAction("開く", self.toEditWindowFromOpenFile)
+
+
+    def initUI(self):
 
         
         self.scrollArea = ScrollArea(self)  # スクロールエリアを作成
