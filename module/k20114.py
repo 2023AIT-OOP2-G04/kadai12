@@ -1,5 +1,11 @@
 import cv2
 import os
+import sys
+# スクリプトのあるディレクトリのパスをsys.pathに追加
+script_dir = os.path.dirname(os.path.abspath(__file__))
+if script_dir not in sys.path:
+    sys.path.insert(0, script_dir)
+
 from postProcessing import PostProcessing
 
 # 学籍番号のクラスを作成してこんな感じで継承する

@@ -235,6 +235,76 @@ class EraserSettingsDialog(QDialog):
         self.okButton.clicked.connect(self.accept)
         layout.addWidget(self.okButton)
 
+class ObjectDetectionDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("マスク対象の設定")
+        self.setFixedSize(400, 200)  # ウィンドウサイズを設定
+
+        layout = QVBoxLayout(self)
+
+       # 太さ設定の水平レイアウト
+        objectDetectionLayout = QHBoxLayout()
+        objectDetectionLayout.addWidget(QLabel("ラベルの番号:"))
+        self.objectDetectionSpinBox = QSpinBox()
+        self.objectDetectionSpinBox.setRange(0, 300)
+        objectDetectionLayout.addWidget(self.objectDetectionSpinBox)
+        layout.addLayout(objectDetectionLayout)  # 水平レイアウトを垂直レイアウトに追加
+        
+        # 決定ボタンを追加
+        self.okButton = QPushButton("決定")
+        self.okButton.clicked.connect(self.accept)
+        layout.addWidget(self.okButton)
+
+class ImageResizeDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("縦横比の設定")
+        self.setFixedSize(400, 200)  # ウィンドウサイズを設定
+
+        layout = QVBoxLayout(self)
+
+       # 太さ設定の水平レイアウト
+        ResizeLayout = QHBoxLayout()
+        ResizeLayout.addWidget(QLabel("縦に対する横の比率(%):"))
+        self.ResizeSpinBox = QSpinBox()
+        self.ResizeSpinBox.setRange(0, 1000)
+        ResizeLayout.addWidget(self.ResizeSpinBox)
+        layout.addLayout(ResizeLayout)  # 水平レイアウトを垂直レイアウトに追加
+        
+        # 決定ボタンを追加
+        self.okButton = QPushButton("決定")
+        self.okButton.clicked.connect(self.accept)
+        layout.addWidget(self.okButton)
+
+class ImageColorDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("画像色設定")
+        self.setFixedSize(400, 400)  # ウィンドウサイズを設定
+
+        layout = QVBoxLayout(self)
+
+       # 彩度設定の水平レイアウト
+        saidoLayout = QHBoxLayout()
+        saidoLayout.addWidget(QLabel("彩度(%):"))
+        self.saidoSpinBox = QSpinBox()
+        self.saidoSpinBox.setRange(0, 200)
+        saidoLayout.addWidget(self.saidoSpinBox)
+        layout.addLayout(saidoLayout)  # 水平レイアウトを垂直レイアウトに追加
+        # 明度設定の水平レイアウト
+        meidoLayout = QHBoxLayout()
+        meidoLayout.addWidget(QLabel("明度(%):"))
+        self.meidoSpinBox = QSpinBox()
+        self.meidoSpinBox.setRange(0, 200)
+        meidoLayout.addWidget(self.meidoSpinBox)
+        layout.addLayout(meidoLayout)  # 水平レイアウトを垂直レイアウトに追加
+        
+        # 決定ボタンを追加
+        self.okButton = QPushButton("決定")
+        self.okButton.clicked.connect(self.accept)
+        layout.addWidget(self.okButton)
+
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -366,6 +436,11 @@ class MainWindow(QMainWindow):
 
     def changeTool(self, button):
         id = self.toolButtonGroup.id(button)
+        # 範囲選択の座標を初期化
+        self.startX = 0
+        self.startY = 0
+        self.endX = 0
+        self.endY = 0
         if id == 2:
             self.drawingWidget.setTool('pen')
             # ペン設定ウィンドウを表示
