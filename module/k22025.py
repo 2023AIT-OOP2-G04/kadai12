@@ -21,7 +21,7 @@ class k22025(PostProcessing):
         resized_image = cv2.resize(image, (new_width, new_height))
 
         # リサイズ後の画像を保存
-        self.saveImage(resized_image)
+        # self.saveImage(resized_image)
 
         # ウィンドウに表示する場合
         # cv2.imshow("Resized Image", resized_image)
@@ -31,7 +31,7 @@ class k22025(PostProcessing):
     def modelFunc(self):
         # 画像の読み込みは基本この関数を使う
         image = self.getEditImage()
-        self.resize_image(image)
+        # self.resize_image(image)
 
         # モデル読み込み
         model = YOLO("./data/yolov8x-seg.pt")
