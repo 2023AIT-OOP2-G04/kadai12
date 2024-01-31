@@ -55,15 +55,10 @@ class ToolBar():
         # self.ImageCutButton.clicked.connect(lambda x: print("画像切り取りツール"))
         self.buttonLayout.addWidget(self.ImageCutButton)
 
-        # #顔・物体検出して色変更ツール
-        # self.button = QPushButton("顔・物体検出して色変更")
-        # self.button.clicked.connect(lambda x: print("顔・物体検出して色変更ツール"))
-        # self.buttonLayout.addWidget(self.button)
-
-        # #顔・物体検出して切り取りツール
-        # self.button = QPushButton("顔・物体検出して切り取り")
-        # self.button.clicked.connect(lambda x: print("顔・物体検出して切り取りツール"))
-        # self.buttonLayout.addWidget(self.button)
+        #顔・物体検出して切り取りツール
+        self.objectDetectionCutButton = QPushButton("顔・物体検出して切り取り")
+        # self.objectDetectionCutButton.clicked.connect(lambda x: print("顔・物体検出して切り取りツール"))
+        self.buttonLayout.addWidget(self.objectDetectionCutButton)
 
         #画像色変更ツール
         self.imageColorButton = QPushButton("彩度・明度変更")
