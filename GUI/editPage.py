@@ -12,12 +12,16 @@ from components.toolBar import ToolBar
 from components.imageWindow import ImageWindow
 from components.scroll import ScrollArea
 from components.paintImageWindow import DrawingWidget,PenSettingsDialog,EraserSettingsDialog
+# 1つ上の階層のフォルダをモジュールパスに追加
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from module.ppManager import PPManager
 
 class EditPage(QMainWindow):
     closed = Signal()  # Signal to indicate the window is closed
 
     def __init__(self):
         super().__init__()
+        self.ppManager = PPManager()
         self.resize(1000,600)
         self.setWindowTitle("PostProcesser")
 
@@ -72,6 +76,9 @@ class EditPage(QMainWindow):
         self.toolBar.toolButtonGroup.buttonClicked.connect(self.changeTool)
         self.toolBar.clearButton.clicked.connect(self.clearDrawing)
         self.toolBar.scaleSpinBox.valueChanged.connect(self.changeScale)
+        # 画像処理ツールのアクション
+        self.toolBar.imageGrayButton.clicked.connect(lambda x=None: self.ppManager.k20114.grayScale())
+
 
         self.toolDock.setWidget(self.toolBarWidget)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.toolDock)
