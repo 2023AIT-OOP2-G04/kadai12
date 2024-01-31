@@ -135,7 +135,8 @@ class EditPage(QMainWindow):
                 self.drawingWidget.setPenWidth(dialog.widthSpinBox.value())
         else:
             # どのツールも選択されていない
-            self.drawingWidget.setTool(None)
+            self.drawingWidget.setTool('none')
+            self.drawingWidget.setCurrentImage()
         
         # 選択されたボタンのスタイルを更新
         self.setStyleForButton(self.toolBar.penButton, button == self.toolBar.penButton)

@@ -46,7 +46,10 @@ class x22037(PostProcessing):
         binImg = cv2.threshold(grayImg, 180, 255, cv2.THRESH_BINARY_INV)[1]
 
         retval, labels, stats, centroids = cv2.connectedComponentsWithStats(binImg)
-
+        if num > retval - 1 or num < 1:
+            print("error")
+            self.saveImage(self.MotoImage)
+            return
         removeImg = self.MotoImage.copy()
         for i in range(stats[num][0], stats[num][0] + stats[num][2]):
             for j in range(stats[num][1], stats[num][1] + stats[num][3]):

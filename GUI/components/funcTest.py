@@ -1,124 +1,46 @@
-# import sys
-# from PySide6.QtWidgets import (
-#     QApplication,
-#     QMainWindow,
-#     QPushButton,
-#     QLabel,
-#     QFileDialog,
-# )
-# from PySide6.QtGui import QPixmap
-
-
-# class ImageApp(QMainWindow):
-#     def __init__(self):
-#         super().__init__()
-
-#         self.resize(1000, 1000)
-#         # 画像を表示するためのラベル
-#         self.image_label = QLabel(self)
-#         self.image_label.setGeometry(10, 10, 600, 400)
-
-#         # 画像をアップロードするためのボタン
-#         self.upload_button = QPushButton("画像を選択", self)
-#         self.upload_button.setGeometry(10, 420, 200, 30)
-#         self.upload_button.clicked.connect(self.upload_image)
-
-#         # 画像を保存するためのボタン
-#         self.save_button = QPushButton("画像を保存", self)
-#         self.save_button.setGeometry(220, 420, 200, 30)
-#         self.save_button.clicked.connect(self.save_image)
-
-#         # 現在の画像のパス
-#         self.current_image_path = None
-
-#     def upload_image(self):
-#         (filename,) = QFileDialog.getOpenFileName(
-#             self, "画像を選択", "", "Image Files (.png .jpg .bmp)"
-#         )
-#         if filename:
-#             self.current_image_path = filename
-#             pixmap = QPixmap(filename)
-#             self.image_label.setPixmap(
-#                 pixmap.scaled(self.image_label.width(), self.image_label.height())
-#             )
-
-#     def save_image(self):
-#         if self.current_image_path:
-#             for current_image_path in self.current_image_paths:
-#                 (savepath,) = QFileDialog.getSaveFileName(
-#                     self, "画像を保存", "", "Image Files (.png .jpg .bmp)"
-#                 )
-#                 if savepath:
-#                     pixmap = QPixmap(self.current_image_path)
-#                     pixmap.save(savepath)
-
-
-# # ここからやること
-# # 画像を選択を押してから、フォルダ内の画像を選択できるようにする
-
-
-# if __name__ == "__main__":
-#     app = QApplication(sys.argv)
-#     windowManager = ImageApp()
-#     windowManager.show()
-#     sys.exit(app.exec_())
-
+from PySide6.QtWidgets import QWidget, QApplication, QLabel
+from PySide6.QtCore import Qt, QRect, QPoint
+from PySide6.QtGui import QPainter, QPen, QPixmap
 import sys
-from PySide6.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QPushButton,
-    QLabel,
-    QFileDialog,
-)
-from PySide6.QtGui import QPixmap
 
+class ImageWidget(QWidget):
+    def __init__(self, image_path, parent=None):
+        super().__init__(parent)
+        self.pixmap = QPixmap(image_path)
+        self.drag_start = None
+        self.drag_end = None
 
-class ImageApp(QMainWindow):
-    def __init__(self):
-        super().__init__()
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.drag_start = event.pos()
+            self.drag_end = None
+            self.update()
 
-        self.resize(1000, 1000)
-        # 画像を表示するためのラベル
-        self.image_label = QLabel(self)
-        self.image_label.setGeometry(10, 10, 600, 400)
+    def mouseMoveEvent(self, event):
+        if event.buttons() == Qt.LeftButton and self.drag_start is not None:
+            self.drag_end = event.pos()
+            self.update()
 
-        # 画像をアップロードするためのボタン
-        self.upload_button = QPushButton("画像を選択", self)
-        self.upload_button.setGeometry(10, 420, 200, 30)
-        self.upload_button.clicked.connect(self.upload_image)
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            if self.drag_start is not None and self.drag_end is not None:
+                print(f"Dragged from {self.drag_start} to {self.drag_end}")
+                self.drag_start = None
+                self.drag_end = None
+                self.update()
 
-        # 画像を保存するためのボタン
-        self.save_button = QPushButton("画像を保存", self)
-        self.save_button.setGeometry(220, 420, 200, 30)
-        self.save_button.clicked.connect(self.save_image)
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.drawPixmap(self.rect(), self.pixmap)
 
-        # 現在の画像のパス
-        self.current_image_paths = []
-
-    def upload_image(self):
-        filenames, selected_filter = QFileDialog.getOpenFileNames(
-            self, "画像を選択", "", "Image Files (*.png *.jpg *.bmp)"
-        )
-        if filenames:
-            self.current_image_paths = filenames
-            pixmap = QPixmap(self.current_image_paths[0])
-            self.image_label.setPixmap(
-                pixmap.scaled(self.image_label.width(), self.image_label.height())
-            )
-
-    def save_image(self):
-        for current_image_path in self.current_image_paths:
-            (savepath,) = QFileDialog.getSaveFileName(
-                self, "画像を保存", "", "Image Files (*.png *.jpg *.bmp)"
-            )
-            if savepath:
-                pixmap = QPixmap(current_image_path)
-                pixmap.save(savepath)
-
+        if self.drag_start is not None and self.drag_end is not None:
+            rect = QRect(self.drag_start, self.drag_end)
+            painter.setPen(QPen(Qt.red, 2, Qt.SolidLine))
+            painter.drawRect(rect)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    windowManager = ImageApp()
-    windowManager.show()
-    sys.exit(app.exec_())
+    image_path = "./img/edit/aaa.jpg"  # 画像のパスに置き換えてください
+    widget = ImageWidget(image_path)
+    widget.show()
+    sys.exit(app.exec())
