@@ -7,8 +7,8 @@ from PySide6 import QtGui,QtCore
 
 from components.scroll import ScrollArea
 from components.IshikawaLayoutTopPgae1 import LayoutTopPage
-# from editPage import EditPage
-from components.WindowTest import SecondWindow as EditPage
+from editPage import EditPage
+# from components.WindowTest import SecondWindow as EditPage
 
 class TopPage(QMainWindow):
     def __init__(self):
@@ -102,7 +102,7 @@ class TopPage(QMainWindow):
             defaultDir = self.get_download_folder_path()
             defaultPath = os.path.join(defaultDir, imagePath.split("/")[-1].split(".")[0]+"_export."+imagePath.split("/")[-1].split(".")[1])
             print(defaultPath)
-            filePath, _ = QFileDialog.getSaveFileName(self, "画像をエクスポート", defaultPath, "PNG Files (*.png);;JPEG Files (*.jpg);;All Files (*)")
+            filePath, _ = QFileDialog.getSaveFileName(self, "画像をエクスポート", defaultPath, "All Files (*);;PNG Files (*.png);;JPEG Files (*.jpg)")
             if filePath:
                 shutil.copy(imagePath,filePath)
         

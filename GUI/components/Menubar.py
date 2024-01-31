@@ -12,19 +12,21 @@ class Menubar(QMenuBar):
         # 　メニュー２：　TopPageに戻る
         self.Menubar2 = self.addMenu("移動")
         # 　メニュー１にアクションを追加
-        self.Menubar1.addAction("画像を保存", self.save_image)
-        self.Menubar1.addAction("エクスポート", self.export)
+        self.saveAction=lambda x=None: print("Hello! from saveAction")
+        self.exportAction=lambda x=None: print("Hello! from export")
+
+        self.Menubar1.addAction("画像を保存", self.saveAction)
+        self.Menubar1.addAction("エクスポート", self.exportAction)
         # 　メニュー２にアクションを追加
-        self.Menubar2.addAction("TopPageに戻る", self.go_to_toppage)
-
-    def save_image(self):
-        print("Hello! from gazouwohozonn")
-
-    def go_to_toppage(self):
-        print("Hello! from TopPageに戻る")
-
-    def export(self):
-        print("Hello! from export")
+        self.closeAction=lambda x=None: print("Hello! from closeAction")
+        self.Menubar2.addAction("TopPageに戻る", self.closeAction)
+    
+    def updateAction(self):
+        self.Menubar1.clear()
+        self.Menubar1.addAction("画像を保存", self.saveAction)
+        self.Menubar1.addAction("エクスポート", self.exportAction)
+        self.Menubar2.clear()
+        self.Menubar2.addAction("TopPageに戻る", self.closeAction)
 
 
 class DebugWindow(QMainWindow):
