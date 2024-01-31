@@ -3,7 +3,7 @@ from sample import k20000 as Sample
 from k20114 import K20114 as K20114
 from k22025 import K22025 as K22025
 from k22136 import k22136 as K22136
-from k22136_2 import k22136 as k22136_2
+from k22136_2 import k22136_2 as k22136_2
 from x22037 import x22037 as X22037
 
 
@@ -25,3 +25,8 @@ if __name__ == "__main__":
     ppManager = PPManager()
     ppManager.sample.sampleFunc()
     ppManager.sample.exportImage("sample.png")
+    ppManager.k20114.trim_and_save((0, 0), (100, 100))
+    ppManager.k22136.adjust_saturation_and_brightness(1.0, 1.0)
+    ppManager.k22136_2.resize_image(1.77)
+    ppManager.x22037.lavelObject()
+    ppManager.x22037.eraseOBjects(1)
