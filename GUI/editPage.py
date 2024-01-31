@@ -11,13 +11,17 @@ from components.Menubar import Menubar
 from components.toolBar import ToolBar
 from components.imageWindow import ImageWindow
 from components.scroll import ScrollArea
-from components.paintImageWindow import DrawingWidget,PenSettingsDialog,EraserSettingsDialog
+from components.paintImageWindow import *
+# 1つ上の階層のフォルダをモジュールパスに追加
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from module.ppManager import PPManager
 
 class EditPage(QMainWindow):
     closed = Signal()  # Signal to indicate the window is closed
 
     def __init__(self):
         super().__init__()
+        self.ppManager = PPManager()
         self.resize(1000,600)
         self.setWindowTitle("PostProcesser")
 
@@ -30,8 +34,11 @@ class EditPage(QMainWindow):
 
 
         # 上部のメッセージエリア
-        messageArea = QLabel("上部のメッセージエリア")
-        messageArea.setStyleSheet("background-color: lightgray;")
+        messageArea = QLabel('''    
+                            <p style="font-size: 14px;">画像を保存する場合はメニューバーの「ファイル」 >> 「画像を保存」から</p>
+                            <p style="font-size: 14px;">トップページに戻る場合はメニューバーの「移動」 >> 「TopPageに戻る」からできます</p>
+                             ''')
+        messageArea.setStyleSheet("background-color: gray;")
         messageArea.setAlignment(Qt.AlignCenter)
 
         
@@ -69,6 +76,13 @@ class EditPage(QMainWindow):
         self.toolBar.toolButtonGroup.buttonClicked.connect(self.changeTool)
         self.toolBar.clearButton.clicked.connect(self.clearDrawing)
         self.toolBar.scaleSpinBox.valueChanged.connect(self.changeScale)
+        self.toolBar.imageColorButton.clicked.connect(lambda x=None: self.imageColor())
+        # 画像処理ツールのアクション
+        self.toolBar.imageGrayButton.clicked.connect(lambda x=None: self.imageGrayScale())
+        self.toolBar.ImageCutButton.clicked.connect(lambda x=None: self.imageTrim())
+        self.toolBar.imageResizeButton.clicked.connect(lambda x=None: self.imageResize())
+        self.toolBar.objectDetectionButton.clicked.connect(lambda x=None: self.imageObjectDetection())
+
 
         self.toolDock.setWidget(self.toolBarWidget)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.toolDock)
@@ -86,6 +100,39 @@ class EditPage(QMainWindow):
 
         self.setMenuBar(self.menuBars)
 
+    def imageGrayScale(self):
+        self.saveDrawing()
+        self.ppManager.k20114.grayScale()
+        self.initUI()
+
+    def imageTrim(self):
+        self.saveDrawing()
+        self.ppManager.k20114.trim_and_save((self.drawingWidget.startX,self.drawingWidget.startY),(self.drawingWidget.endX,self.drawingWidget.endY))
+        self.initUI()
+    
+    def imageColor(self):
+        self.saveDrawing()
+        dialog=ImageColorDialog(self)
+        if dialog.exec():
+            self.ppManager.k22136.adjust_saturation_and_brightness(dialog.saidoSpinBox.value()/100.0,dialog.meidoSpinBox.value()/100.0)
+            self.initUI()
+
+    def imageResize(self):
+        self.saveDrawing()
+        dialog=ImageResizeDialog(self)
+        if dialog.exec():
+            self.ppManager.k22136_2.resize_image(dialog.ResizeSpinBox.value()/100.0)
+            self.initUI()
+
+    def imageObjectDetection(self):
+        self.saveDrawing()
+        self.ppManager.x22037.lavelObject()
+        self.initUI()
+        dialog=ObjectDetectionDialog(self)
+        if dialog.exec():
+            self.ppManager.x22037.eraseOBjects(dialog.objectDetectionSpinBox.value())
+        self.initUI()
+
     def getEditImagePath(self)->str:
         for f in os.listdir("./img/edit"):
             if os.path.isfile(os.path.join("./img/edit", f)) and f != ".gitignore" and f != ".DS_Store":
@@ -98,6 +145,8 @@ class EditPage(QMainWindow):
             return os.path.join(os.path.expanduser('~'), 'Downloads')
         else:  # macOSやLinuxの場合
             return os.path.expanduser('~/Downloads')
+        
+    
 
     def clearDrawing(self):
         self.drawingWidget.clearImage()

@@ -68,7 +68,7 @@ class TopPage(QMainWindow):
                 os.remove(os.path.join("./img/edit", f))
 
     def toEditWindowFromNewFile(self):
-        print("new file")
+        self.resetEditFolder()
     
     def toEditWindowFromOpenFile(self):
         # print("open file")

@@ -47,12 +47,12 @@ class ToolBar():
 
         #白黒加工ツール
         self.imageGrayButton = QPushButton("白黒加工")
-        self.imageGrayButton.clicked.connect(lambda x: print("白黒加工ツール"))
+        # self.imageGrayButton.clicked.connect(lambda x: print("白黒加工ツール"))
         self.buttonLayout.addWidget(self.imageGrayButton)
 
         # 画像切り取りツール
         self.ImageCutButton = QPushButton("画像切り取り")
-        self.ImageCutButton.clicked.connect(lambda x: print("画像切り取りツール"))
+        # self.ImageCutButton.clicked.connect(lambda x: print("画像切り取りツール"))
         self.buttonLayout.addWidget(self.ImageCutButton)
 
         # #顔・物体検出して色変更ツール
@@ -66,18 +66,18 @@ class ToolBar():
         # self.buttonLayout.addWidget(self.button)
 
         #画像色変更ツール
-        self.imageColorButton = QPushButton("画像色変更")
-        self.imageColorButton.clicked.connect(lambda x: print("画像色変更ツール"))
+        self.imageColorButton = QPushButton("彩度・明度変更")
+        # self.imageColorButton.clicked.connect(lambda x: print("画像色変更ツール"))
         self.buttonLayout.addWidget(self.imageColorButton)
 
         #縦横比変更ツール
         self.imageResizeButton = QPushButton("縦横比変更")
-        self.imageResizeButton.clicked.connect(lambda x: print("縦横比変更ツール"))
+        # self.imageResizeButton.clicked.connect(lambda x: print("縦横比変更ツール"))
         self.buttonLayout.addWidget(self.imageResizeButton)
 
         #物体検出してマスクツール
         self.objectDetectionButton = QPushButton("物体検出してマスク")
-        self.objectDetectionButton.clicked.connect(lambda x: print("物体検出してマスクツール"))
+        # self.objectDetectionButton.clicked.connect(lambda x: print("物体検出してマスクツール"))
         self.buttonLayout.addWidget(self.objectDetectionButton)
 
 
