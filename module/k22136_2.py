@@ -10,7 +10,7 @@ class k22136_2(PostProcessing):
         super().__init__()
         pass
 
-    def resize_image(self, target_aspect_ratio):
+    def resize_image(self, vertical_ratio, horizontal_ratio):
         # 画像を開く
         image = self.getEditImage()
 
@@ -18,13 +18,14 @@ class k22136_2(PostProcessing):
         original_height, original_width, _ = image.shape
         original_aspect_ratio = original_width / original_height
 
-        # ターゲットの縦横比に合わせて新しいサイズを計算xs
-        if original_aspect_ratio > target_aspect_ratio:
-            new_width = int(original_height * target_aspect_ratio)
+        # ターゲットの縦横比に合わせて新しいサイズを計算
+        if original_aspect_ratio > (horizontal_ratio / vertical_ratio):
+            new_width = int(original_height * (horizontal_ratio / vertical_ratio))
             new_height = original_height
         else:
             new_width = original_width
-            new_height = int(original_width / target_aspect_ratio)
+            new_height = int(original_width / (horizontal_ratio / vertical_ratio))
+
 
         # 画像をリサイズ
         resized_image = cv2.resize(image, (new_width, new_height))
@@ -39,7 +40,8 @@ if __name__ == "__main__":
     pp = k22136_2()
 
     # ユーザーによって指定された縦横比を取得
-    user_aspect_ratio = float(input("縦横比を入力してください（例: 1.77）: "))
+    vertical_ratio = int(input("縦の比率を入力してください: "))
+    horizontal_ratio = int(input("横の比率を入力してください: "))
 
     # 画像を指定された縦横比にリサイズ
-    pp.resize_image(user_aspect_ratio) 
+    pp.resize_image(vertical_ratio, horizontal_ratio) 
