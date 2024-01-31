@@ -30,8 +30,11 @@ class EditPage(QMainWindow):
 
 
         # 上部のメッセージエリア
-        messageArea = QLabel("上部のメッセージエリア")
-        messageArea.setStyleSheet("background-color: lightgray;")
+        messageArea = QLabel('''    
+                            <p style="font-size: 14px;">画像を保存する場合はメニューバーの「ファイル」 >> 「画像を保存」から</p>
+                            <p style="font-size: 14px;">トップページに戻る場合はメニューバーの「移動」 >> 「TopPageに戻る」からできます</p>
+                             ''')
+        messageArea.setStyleSheet("background-color: gray;")
         messageArea.setAlignment(Qt.AlignCenter)
 
         
