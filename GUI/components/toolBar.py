@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QWidget
 
 #ツールバーのGUI
 class ToolBar():
-    def __init__(self,parent:QWidget):
+    def __init__(self,parent:QDockWidget):
         
         layout = QVBoxLayout()
 
@@ -59,12 +59,17 @@ class ToolBar():
 
         parent.setLayout(layout)
 
-class DebugWindow(QWidget):
+class DebugWindow(QMainWindow):
     def __init__(self, parent=None):
         super(DebugWindow, self).__init__(parent)
         self.setWindowTitle("デバッグ用ウィンドウ")
         self.resize(100, 500)
-        self.toolBar=ToolBar(self)
+        self.toolDock = QDockWidget("aaa",self)
+        self.toolBar = QWidget()
+        ToolBar(self.toolBar)
+        self.toolDock.setWidget(self.toolBar)
+
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.toolDock)
         
     
 

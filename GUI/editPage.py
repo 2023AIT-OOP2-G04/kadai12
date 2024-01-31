@@ -2,52 +2,48 @@
 import sys
 from PySide6.QtWidgets import *
 from PySide6 import QtGui,QtCore
+from PySide6.QtCore import Qt
+from components.toolBar import ToolBar
+from components.imageWindow import ImageWindow
+from components.scroll import ScrollArea
 
-class EditPage(QWidget):
+class EditPage(QMainWindow):
     def __init__(self):
         super().__init__()
         self.resize(1000,600)
-        #ラベルで上（メニューバー）、右下（キャンバス）
-        #メニューバー
-        self.labelMenu = QLabel(self)
-        self.labelStyle = """QLabel {
-            background-color: #FFAA00;  /* 背景色 */
-        }"""
-        self.labelMenu.setText("メニューバーが入ります")
-        # 見た目の設定をラベルに反映させる
-        self.labelMenu.setStyleSheet(self.labelStyle)
+
+        # 上部のメッセージエリア
+        messageArea = QLabel("上部のメッセージエリア")
+        messageArea.setStyleSheet("background-color: lightgray;")
+        messageArea.setAlignment(Qt.AlignCenter)
 
         #ツールバー
-        self.labelTool = QLabel(self)
-        self.labelStyle = """QLabel {
-            background-color: #FF0000;  /* 背景色 */
-        }"""
-        self.labelTool.setText("ツールバーが入ります")
-        # 見た目の設定をラベルに反映させる
-        self.labelTool.setStyleSheet(self.labelStyle)
+        self.toolDock = QDockWidget("tool",self)
+        self.toolBar = QWidget()
+        ToolBar(self.toolBar)
+        self.toolDock.setWidget(self.toolBar)
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.toolDock)
 
         #キャンバス
-        self.labelCanvas = QLabel(self)
-        self.labelStyle = """QLabel {
-            background-color: #FFFFFF;  /* 背景色 */
-        }"""
-        self.labelCanvas.setText("キャンバスが入ります")
-        # 見た目の設定をラベルに反映させる
-        self.labelCanvas.setStyleSheet(self.labelStyle)
+        self.imageWindow = ImageWindow()  # キャンバスを作成
+        self.setCentralWidget(self.imageWindow) # キャンバスをセントラルウィジェットに設定
+        self.scrollArea = ScrollArea(self)  # スクロールエリアを作成
+        self.layout = QVBoxLayout(self) # レイアウトを作成
+        self.layout.addWidget(self.scrollArea)  # レイアウトにスクロールエリアを追加
+        self.imageWindow = ImageWindow(self,width=4000,height=3000)    # スクロールエリアに追加するウィジェットを作成
+        self.scrollArea.addWidget(self.imageWindow) # スクロールエリアにウィジェットを追加
 
-        #メニューバーを垂直方向に並べる
-        layoutQV = QVBoxLayout()
-        layoutQV.addWidget(self.labelMenu)
-        #ツールバーとキャンバスを水平方向に並べる
-        layoutQH = QHBoxLayout()
-        layoutQH.addWidget(self.labelTool,1)
-        layoutQH.addWidget(self.labelCanvas,5)
-        #レイアウト同士を組み合わせる
-        parentLayout = QVBoxLayout()
-        parentLayout.addLayout(layoutQV,1)
-        parentLayout.addLayout(layoutQH,5)
+         # メインレイアウト
+        layoutMain = QVBoxLayout()
+        layoutMain.addWidget(messageArea,1)
+        layoutMain.addWidget(self.scrollArea,4)
+        
 
-        self.setLayout(parentLayout)  
+        # メインウィジェットにメインレイアウトを設定
+        widgetMain = QWidget()
+        widgetMain.setLayout(layoutMain)
+        self.setCentralWidget(widgetMain)
+        
 
 
 if __name__ == '__main__':
