@@ -1,7 +1,8 @@
 import sys
-from PySide6.QtWidgets import QApplication,QWidget,QLabel,QPushButton,QHBoxLayout,QGridLayout,QVBoxLayout,QScrollArea
+from PySide6.QtWidgets import *
 from PySide6 import QtGui,QtCore
-from PySide6.QtGui import QImage,QPixmap
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QImage,QPixmap,QMouseEvent,QCursor,QIcon,QPalette
 import os
 
 
@@ -12,17 +13,19 @@ class LayoutTopPage(QWidget):
         self.setGeometry(100,100,1600,1200) # ウィンドウの位置(x,y)と大きさ(w,h)
         self.fileNames = []
         self.folderPath = "./img/saved/"
+        self.pixImages:list[ImageLabel] = []
         self.getFileNames()
         self.initUI()
 
 
+    # UIはここに書く
     def initUI(self):
         
         # メッセージボックスを作成
         message = QLabel('''
-                        <strong style="font-size: 32px;">PostProcesser（ポストプロセッサー）へようこそ！</strong><br>
+                        <strong style="font-size: 32px;">PostProcesserへようこそ！</strong><br>
                         <p style="font-size: 14px;">画像を開く場合は下のボタンかメニューバーの「ファイル」 >> 「開く」から</p>
-                        <p style="font-size: 14px;">お絵描きから始める場合はメニューバーの「ファイル」 >> 「新規作成」からお願いします。</p>
+                        <p style="font-size: 14px;">お絵描きから始める場合はメニューバーの「ファイル」 >> 「新規作成」からお願いします</p>
                          ''',alignment = QtCore.Qt.AlignCenter)
         message.setFixedSize(700,200)
         layout_message = QHBoxLayout()
@@ -76,23 +79,64 @@ class LayoutTopPage(QWidget):
 
     #画像の表示関数
     def showImage(self,imagePath:str=None) -> QHBoxLayout:
-        if imagePath:
-            beforeimg = QImage(imagePath)
-            afterimg = beforeimg.scaled(500,500,QtCore.Qt.AspectRatioMode.KeepAspectRatio)
-            image = QLabel()
-            image.setPixmap(QPixmap.fromImage(afterimg))
-        else:
-            image = QLabel()
-            image.setFixedSize(500,500)
+        image=ImageLabel(imagePath,parent=self)
+        self.pixImages.append(image)
         layout_image = QHBoxLayout()
         layout_image.addWidget(image,alignment=QtGui.Qt.AlignHCenter)
         return layout_image
         
-    #フォルダ内のファイル名を取得
+    #フォルダ内のファイル名を配列で取得してself.fileNamesに格納
     def getFileNames(self) :
             # savedフォルダ内から.gitignoreと.DS_Storeを除いたファイル名の配列を取得
             self.fileNames = [f for f in os.listdir(self.folderPath) if os.path.isfile(os.path.join(self.folderPath, f)) and f != ".gitignore" and f != ".DS_Store"]
             # print(self.fileNames)
+
+# 画像にメニューを追加するためのクラス
+class ImageLabel(QLabel):
+    def __init__(self, imagePath:str=None, parent=None):
+        super().__init__(parent)
+        self.imagePath = imagePath
+        if imagePath:
+            beforeimg = QImage(imagePath)
+            afterimg = beforeimg.scaled(500,500,QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+            self.setPixmap(QPixmap.fromImage(afterimg))
+        else:
+            self.setFixedSize(500,500)
+            # このときはイベントを無効にする
+            self.setEnabled(False)
+
+        self.openAction = lambda : print("open")
+        self.saveAction = lambda : print(f"save {self.imagePath}")
+
+
+    def mousePressEvent(self, event: QMouseEvent):
+        if event.button() == Qt.RightButton:
+            self.showContextMenu(event.pos())
+
+    def showContextMenu(self, position):
+        menu = QMenu()
+        # メニューのスタイルを設定
+        menu.setStyleSheet("""
+            QMenu {
+                font-size: 16pt;
+                padding: 10px;
+            }
+            QMenu::item {
+                padding: 10px 20px;
+                background-color: transparent;
+            }
+            QMenu::item:selected, QMenu::item:hover {
+                background-color: #0078d7; /* ハイライト時の背景色 */
+                color: white;              /* ハイライト時のテキスト色 */
+            }
+        """)
+
+
+        openAction = menu.addAction("画像を開く",self.openAction)
+        saveAction = menu.addAction("画像をダウンロード",self.saveAction)
+
+        action = menu.exec(self.mapToGlobal(position))
+
                 
                         
         
