@@ -5,9 +5,14 @@ import os
 from PySide6.QtWidgets import *
 from PySide6 import QtGui,QtCore
 
-from components.scroll import ScrollArea
-from components.IshikawaLayoutTopPgae1 import LayoutTopPage
-from editPage import EditPage
+if __name__ == '__main__':
+    from components.scroll import ScrollArea
+    from components.IshikawaLayoutTopPgae1 import LayoutTopPage
+    from editPage import EditPage
+else:
+    from .components.scroll import ScrollArea
+    from .components.IshikawaLayoutTopPgae1 import LayoutTopPage
+    from .editPage import EditPage
 # from components.WindowTest import SecondWindow as EditPage
 
 class TopPage(QMainWindow):

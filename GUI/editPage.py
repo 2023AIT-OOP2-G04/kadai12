@@ -7,11 +7,18 @@ from PySide6 import QtGui,QtCore
 from PySide6.QtCore import Qt
 from PySide6.QtCore import Signal, Slot
 
-from components.Menubar import Menubar
-from components.toolBar import ToolBar
-from components.imageWindow import ImageWindow
-from components.scroll import ScrollArea
-from components.paintImageWindow import DrawingWidget,PenSettingsDialog,EraserSettingsDialog
+if __name__ == '__main__':
+    from components.Menubar import Menubar
+    from components.toolBar import ToolBar
+    from components.imageWindow import ImageWindow
+    from components.scroll import ScrollArea
+    from components.paintImageWindow import DrawingWidget,PenSettingsDialog,EraserSettingsDialog
+else:
+    from .components.Menubar import Menubar
+    from .components.toolBar import ToolBar
+    from .components.imageWindow import ImageWindow
+    from .components.scroll import ScrollArea
+    from .components.paintImageWindow import DrawingWidget,PenSettingsDialog,EraserSettingsDialog
 
 class EditPage(QMainWindow):
     closed = Signal()  # Signal to indicate the window is closed
