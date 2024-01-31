@@ -82,6 +82,7 @@ class EditPage(QMainWindow):
         self.toolBar.ImageCutButton.clicked.connect(lambda x=None: self.imageTrim())
         self.toolBar.imageResizeButton.clicked.connect(lambda x=None: self.imageResize())
         self.toolBar.objectDetectionButton.clicked.connect(lambda x=None: self.imageObjectDetection())
+        self.toolBar.objectDetectionCutButton.clicked.connect(lambda x=None: self.imageObjectDetectionCut())
 
 
         self.toolDock.setWidget(self.toolBarWidget)
@@ -132,6 +133,22 @@ class EditPage(QMainWindow):
         if dialog.exec():
             self.ppManager.x22037.eraseOBjects(dialog.objectDetectionSpinBox.value())
         self.initUI()
+
+    def imageObjectDetectionCut(self):
+        # self.saveDrawing()
+        # # ./img/tmp/predictフォルダがある場合は削除
+        # if os.path.exists("./img/tmp/predict"):
+        #     shutil.rmtree("./img/tmp/predict")
+        # self.ppManager.k22025.modelFunc()
+        # # 画像処理が終わるまで待つ
+        # while not os.path.exists("./img/tmp/predict"):
+        #     pass
+        # self.initUI()
+        dialog=ObjectDetectionCutDialog(self)
+        dialog.exec()
+        self.initUI()
+
+
 
     def getEditImagePath(self)->str:
         for f in os.listdir("./img/edit"):

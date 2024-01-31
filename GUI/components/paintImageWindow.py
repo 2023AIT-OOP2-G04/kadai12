@@ -1,7 +1,9 @@
 import sys
 import os
+import shutil
 from PySide6.QtWidgets import *
-from PySide6.QtGui import QPainter, QPen, QColor, QPixmap
+from PySide6 import QtGui,QtCore
+from PySide6.QtGui import QPainter, QPen, QColor, QPixmap,QImage
 from PySide6.QtCore import Qt, QPoint,QRect,QSize
 
 class DrawingWidget(QWidget):
@@ -240,6 +242,7 @@ class ObjectDetectionDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("マスク対象の設定")
         self.setFixedSize(400, 200)  # ウィンドウサイズを設定
+        
 
         layout = QVBoxLayout(self)
 
@@ -255,6 +258,116 @@ class ObjectDetectionDialog(QDialog):
         self.okButton = QPushButton("決定")
         self.okButton.clicked.connect(self.accept)
         layout.addWidget(self.okButton)
+
+class ObjectDetectionCutDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.setWindowTitle('トップページ') # ウィンドウのタイトル
+        self.setGeometry(100,100,800,1200) # ウィンドウの位置(x,y)と大きさ(w,h)
+        self.fileNames = []
+        self.defaultDir="./img/tmp/predict/crops"
+        self.folderPath = "./img/saved/"
+        self.pixImages:list[ImageLabel] = []
+        self.getCuttingImagefolderName()
+        self.initUI()
+
+
+    # UIはここに書く
+    def initUI(self):
+
+        self.layout = QVBoxLayout()
+        self.layout.setSpacing(60)
+        self.layoutImages=QVBoxLayout()
+        self.layoutImages.setSpacing(0)
+        self.layoutImages.addStretch()
+        
+        for folderName in self.folderNames:
+            print(folderName)
+            self.folderPath = self.defaultDir+"/"+folderName+"/"
+            self.getFileNames(self.folderPath)
+            for count,fileName in enumerate(self.fileNames):
+                print(fileName)
+                if count%2==0:
+                    self.layoutImagesTmp=QHBoxLayout()
+                    self.layoutImagesTmp.addLayout(self.showImage(self.folderPath+fileName))
+                else:
+                    self.layoutImagesTmp.addLayout(self.showImage(self.folderPath+fileName))
+                    self.layoutImages.addLayout(self.layoutImagesTmp)
+                    self.layoutImages.addStretch()
+        
+            # もし画像の数が奇数ならレイアウトを調整
+            if len(self.fileNames)%2==1:
+                print("奇数")
+                # 架空の画像を生成してレイアウトを埋める
+                layoutFillSpace = self.showImage()
+                self.layoutImagesTmp.addLayout(layoutFillSpace)
+                self.layoutImages.addLayout(self.layoutImagesTmp)
+                self.layoutImages.addStretch()
+    
+        self.layout.addLayout(self.layoutImages)
+
+        
+        self.setLayout(self.layout)
+
+        # 画像にイベントを追加
+        for image in self.pixImages:
+            image.clickAction=lambda x=image: self.clickImage(x.imagePath)
+        
+    
+    def clickImage(self,imagePath:str=None):
+        self.resetEditFolder()
+        shutil.copy(imagePath,"./img/edit/"+imagePath.split("/")[-1])
+        self.accept()
+
+    # editフォルダ内の画像をリセットする関数
+    def resetEditFolder(self):
+        # editフォルダ内の.gitingoreと.DS_Storeを除いたファイルを削除
+        for f in os.listdir("./img/edit"):
+            if os.path.isfile(os.path.join("./img/edit", f)) and f != ".gitignore" and f != ".DS_Store":
+                os.remove(os.path.join("./img/edit", f))
+
+
+    #画像の表示関数
+    def showImage(self,imagePath:str=None) -> QHBoxLayout:
+        image=ImageLabel(imagePath,parent=self)
+        self.pixImages.append(image)
+        layout_image = QHBoxLayout()
+        layout_image.addWidget(image,alignment=QtGui.Qt.AlignHCenter)
+        return layout_image
+    
+    def getFileNames(self, folderPath:str=None) :
+            # フォルダ内から.gitignoreと.DS_Storeを除いたファイル名の配列を取得
+            self.fileNames = [f for f in os.listdir(self.folderPath) if os.path.isfile(os.path.join(self.folderPath, f)) and f != ".gitignore" and f != ".DS_Store"]
+            # print(self.fileNames)
+    
+    def getCuttingImagefolderName(self):
+        # ./img/tmp/predict/cropsフォルダが存在しない場合は終了
+        if not os.path.exists(self.defaultDir):
+            return None
+        # ./img/tmp/predict/cropsフォルダ内のフォルダ名を配列で取得
+        self.folderNames = [f for f in os.listdir(self.defaultDir) if os.path.isdir(os.path.join(self.defaultDir, f))]
+        # print(self.folderNames)
+        return self.folderNames
+
+class ImageLabel(QLabel):
+    def __init__(self, imagePath:str=None, parent=None):
+        super().__init__(parent)
+        self.imagePath = imagePath
+        self.clickAction = None
+        if imagePath:
+            beforeimg = QImage(imagePath)
+            afterimg = beforeimg.scaled(100,100,QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+            self.setPixmap(QPixmap.fromImage(afterimg))
+        else:
+            self.setFixedSize(100,100)
+            # このときはイベントを無効にする
+            self.setEnabled(False)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            if self.clickAction:
+                self.clickAction()
+
 
 class ImageResizeDialog(QDialog):
     def __init__(self, parent=None):
@@ -475,3 +588,4 @@ if __name__ == "__main__":
     mainWindow = MainWindow()
     mainWindow.show()
     sys.exit(app.exec())
+    
