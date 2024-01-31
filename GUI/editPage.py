@@ -56,9 +56,21 @@ class EditPage(QMainWindow):
     def createDockBar(self):
         #ツールバー
         self.toolDock = QDockWidget("tool",self)
-        self.toolBar = QWidget()
-        ToolBar(self.toolBar)
-        self.toolDock.setWidget(self.toolBar)
+        self.toolBarWidget = QWidget()
+        self.toolBar=ToolBar(self.toolBarWidget,mainWindow=self)
+
+        # スタイル設定
+        # ボタンのスタイルを設定するためのメソッド
+        self.setStyleForButton(self.toolBar.penButton, False)
+        self.setStyleForButton(self.toolBar.eraserButton, False)
+        self.setStyleForButton(self.toolBar.noneButton, True)
+
+        # 部品にアクションを追加
+        self.toolBar.toolButtonGroup.buttonClicked.connect(self.changeTool)
+        self.toolBar.clearButton.clicked.connect(self.clearDrawing)
+        self.toolBar.scaleSpinBox.valueChanged.connect(self.changeScale)
+
+        self.toolDock.setWidget(self.toolBarWidget)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.toolDock)
 
     def createMenuBar(self):
@@ -106,7 +118,7 @@ class EditPage(QMainWindow):
             button.setStyleSheet("")
 
     def changeTool(self, button):
-        id = self.toolButtonGroup.id(button)
+        id = self.toolBar.toolButtonGroup.id(button)
         if id == 2:
             self.drawingWidget.setTool('pen')
             # ペン設定ウィンドウを表示
@@ -126,12 +138,21 @@ class EditPage(QMainWindow):
             self.drawingWidget.setTool(None)
         
         # 選択されたボタンのスタイルを更新
-        self.setStyleForButton(self.penButton, button == self.penButton)
-        self.setStyleForButton(self.eraserButton, button == self.eraserButton)
-        self.setStyleForButton(self.noneButton, button == self.noneButton)
+        self.setStyleForButton(self.toolBar.penButton, button == self.toolBar.penButton)
+        self.setStyleForButton(self.toolBar.eraserButton, button == self.toolBar.eraserButton)
+        self.setStyleForButton(self.toolBar.noneButton, button == self.toolBar.noneButton)
+
+    def changeScale(self, value):
+        scaleFactor = value / 100.0  # スピンボックスの値をスケールファクタに変換
+        self.drawingWidget.setScaleFactor(scaleFactor)
+
+    def saveDrawing(self):
+        imagePath = self.getEditImagePath()
+        self.drawingWidget.saveImage(imagePath)
 
     def SaveImage(self,exportFlg=False):
         imagePath = self.getEditImagePath()
+        self.saveDrawing()
         savedForlderPath = "./img/saved"
         if imagePath!="":
             shutil.copy(imagePath,savedForlderPath)

@@ -173,11 +173,6 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("お絵描きアプリ")
         self.resize(1000, 600)
 
-        # 上部のメッセージエリア
-        messageArea = QLabel("上部のメッセージエリア")
-        messageArea.setStyleSheet("background-color: lightgray;")
-        messageArea.setAlignment(Qt.AlignCenter)
-
         
 
         
