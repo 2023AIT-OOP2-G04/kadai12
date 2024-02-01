@@ -17,7 +17,7 @@ class TopPage(QMainWindow):
         super().__init__()
 
         # ウィンドウの設定
-        self.setWindowTitle("PostProcesser")
+        self.setWindowTitle("PostProcessor")
         self.setGeometry(100, 100, 1600, 1000)
         self.createMenuBar()
         self.initUI()

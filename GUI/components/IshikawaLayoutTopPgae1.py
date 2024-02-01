@@ -23,7 +23,7 @@ class LayoutTopPage(QWidget):
         
         # メッセージボックスを作成
         message = QLabel('''
-                        <strong style="font-size: 32px;">PostProcesserへようこそ！</strong><br>
+                        <strong style="font-size: 32px;">PostProcessorへようこそ！</strong><br>
                         <p style="font-size: 14px;">画像を開く場合は下のボタンかメニューバーの「ファイル」 >> 「開く」から</p>
                         <p style="font-size: 14px;">お絵描きから始める場合はメニューバーの「ファイル」 >> 「新規作成」からお願いします</p>
                          ''',alignment = QtCore.Qt.AlignCenter)

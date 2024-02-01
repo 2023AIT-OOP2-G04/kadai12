@@ -23,7 +23,7 @@ class EditPage(QMainWindow):
         super().__init__()
         self.ppManager = PPManager()
         self.setGeometry(100, 100, 1600, 1000)
-        self.setWindowTitle("PostProcesser")
+        self.setWindowTitle("PostProcessor")
 
         self.createMenuBar()
         self.createDockBar()
