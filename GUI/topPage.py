@@ -4,7 +4,9 @@ import shutil
 import os
 from PySide6.QtWidgets import *
 from PySide6 import QtGui,QtCore
-
+from PySide6.QtCore import Qt
+from PySide6.QtCore import Signal, Slot
+from PySide6.QtGui import QPixmap
 from components.scroll import ScrollArea
 from components.IshikawaLayoutTopPgae1 import LayoutTopPage
 from editPage import EditPage
@@ -15,7 +17,7 @@ class TopPage(QMainWindow):
         super().__init__()
 
         # ウィンドウの設定
-        self.setWindowTitle("PostProcesser")
+        self.setWindowTitle("PostProcessor")
         self.setGeometry(100, 100, 1600, 1000)
         self.createMenuBar()
         self.initUI()
@@ -69,6 +71,7 @@ class TopPage(QMainWindow):
 
     def toEditWindowFromNewFile(self):
         self.resetEditFolder()
+        self.openEditWindow()
     
     def toEditWindowFromOpenFile(self):
         # print("open file")

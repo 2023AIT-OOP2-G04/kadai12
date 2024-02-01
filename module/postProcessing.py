@@ -17,7 +17,7 @@ class PostProcessing(metaclass=ABCMeta):
             if fileName == ".gitignore" or fileName == ".DS_Store":
                 continue
             filePath = self.editFolderPath + fileName
-        return filePath
+            return filePath
     
     # editフォルダ内の画像を読み込む関数、継承すれば使えるようになります
     def getEditImage(self) -> cv2.Mat:

@@ -22,8 +22,8 @@ class EditPage(QMainWindow):
     def __init__(self):
         super().__init__()
         self.ppManager = PPManager()
-        self.resize(1000,600)
-        self.setWindowTitle("PostProcesser")
+        self.setGeometry(100, 100, 1600, 1000)
+        self.setWindowTitle("PostProcessor")
 
         self.createMenuBar()
         self.createDockBar()
@@ -132,18 +132,20 @@ class EditPage(QMainWindow):
         dialog=ObjectDetectionDialog(self)
         if dialog.exec():
             self.ppManager.x22037.eraseOBjects(dialog.objectDetectionSpinBox.value())
+        else:
+            self.ppManager.x22037.eraseOBjects(-1)
         self.initUI()
 
     def imageObjectDetectionCut(self):
-        # self.saveDrawing()
-        # # ./img/tmp/predictフォルダがある場合は削除
-        # if os.path.exists("./img/tmp/predict"):
-        #     shutil.rmtree("./img/tmp/predict")
-        # self.ppManager.k22025.modelFunc()
-        # # 画像処理が終わるまで待つ
-        # while not os.path.exists("./img/tmp/predict"):
-        #     pass
-        # self.initUI()
+        self.saveDrawing()
+        # ./img/tmp/predictフォルダがある場合は削除
+        if os.path.exists("./img/tmp/predict"):
+            shutil.rmtree("./img/tmp/predict")
+        self.ppManager.k22025.modelFunc()
+        # 画像処理が終わるまで待つ
+        while not os.path.exists("./img/tmp/predict"):
+            pass
+        self.initUI()
         dialog=ObjectDetectionCutDialog(self)
         dialog.exec()
         self.initUI()
